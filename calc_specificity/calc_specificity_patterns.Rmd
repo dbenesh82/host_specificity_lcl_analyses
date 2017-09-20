@@ -1,0 +1,460 @@
+---
+title: "Host specificity analyses - calculate and analyze host specificity"
+output: github_document
+---
+
+**Background**: I published a [database](http://onlinelibrary.wiley.com/doi/10.1002/ecy.1680/suppinfo) of helminth (parasitic worm) life cycles. Complex life cycle parasites infect dissimilar hosts over the course of their life cycles. This calculates host specificity indexes and examines host specificity over complex life cycles.
+
+Need to run the script to [get and clean the taxonomy]("../get_taxonomy/get_clean_host_taxonomy.RMD") to have the most up to date taxonomy.
+
+
+Start as usual by loading libraries, setting a plotting theme, and importing data
+```{r, message=FALSE, warning=FALSE}
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(RColorBrewer)
+
+options(stringsAsFactors = FALSE)
+
+theme.o <- theme_update(axis.text = element_text(colour="black", size = 15),
+                        axis.title = element_text(colour="black", size = 18, face = "bold", lineheight=0.25),
+                        axis.ticks = element_line(colour="black"),
+                        panel.border = element_rect(colour = "black",fill=NA),
+                        panel.grid.minor=element_blank(),
+                        panel.grid.major=element_line(color="gray",linetype = "dotted"),
+                        panel.background= element_rect(fill = NA))
+
+setwd("..")
+
+# load host database
+dataH <- read.csv(file="CLC_database_hosts.csv", header = TRUE, sep=",")
+```
+
+We start by looking at the host range for a parasite, pooled across at all stages (larval and adult). Some parasite cycles were not complete (i.e. a host was assumed and not shown). We'll remove the parasite species where the life cycle is only partially known.
+
+```{r}
+# remove these 'incomplete' parasite species
+rp <- filter(dataH, Missing.info == 1, is.na(Host.species))%>%
+  select(Parasite.species)%>%distinct()
+
+dataH <- filter(dataH, !(Parasite.species %in% rp$Parasite.species))
+
+# then calculate number of hosts
+dataH.hs <- group_by(dataH, Parasite.species)%>%
+  summarise(hosts = n(), maxLCL = max(Host.no))
+```
+
+When we plot this, we see that the simple assumption that parasites with long cycles have been recorded from more hosts looks valid.
+
+```{r}
+#make life cycle length a factor and pool the few parasites with life cycles longer than three hosts
+dataH.hs <- mutate(dataH.hs, maxLCL.fac = if_else(maxLCL > 3, as.integer(4), maxLCL),
+                   maxLCL.fac = factor(maxLCL.fac, labels = c("1", "2", "3", ">3")))
+
+ggplot(dataH.hs,
+       aes(x = maxLCL.fac, y = hosts)) + 
+  geom_boxplot(outlier.color = "white", width = 0.9) +
+  geom_jitter(width = 0.2, height = 0, color = "red", alpha = 0.15) +
+  labs(x = "Life cycle length", y = "Hosts in the database") + 
+  scale_y_log10() +
+  theme(panel.grid.major.x = element_blank())
+```
+
+A parasite with a direct cycle had a median of two-hosts, whereas a parasite with 3 or more hosts had a median of over 21 hosts.
+
+```{r}
+tapply(dataH.hs$hosts, dataH.hs$maxLCL.fac, median, na.rm=T)
+```
+
+The regression is also clearly significant.
+
+```{r}
+summary(lm(log10(hosts) ~ maxLCL, data = dataH.hs))
+```
+
+Host range, the number of hosts from which a parasite has been recorded, is a simple metric. For example, it does not account for the taxonomic dissimilarity of hosts. We can load host taxonomy data and calculate a little more complex measure of specificity. 
+
+```{r}
+setwd("..")
+host.tax <- read.csv(file="ncbi_host_taxonomy.csv", header = TRUE, sep=",") # taxonomy from NCBI
+```
+
+We add it to the main table with the hosts.
+
+```{r}
+dataH <- left_join(dataH, 
+                   select(host.tax, sp.query, genus, family, order, class, phylum),
+                   by = c("Host.species" = "sp.query"))
+```
+
+This is how much missing data is in the combined data frames.
+
+```{r}
+sapply(select(dataH, Host.species, genus:phylum), function(x) sum(is.na(x)))
+```
+
+Before calculating an specificity indices, we need to reduce the data to just those hosts with a full taxonomic hierarchy, otherwise specificity calculations are not comparable.
+
+```{r}
+phy.hs <- select(dataH, Parasite.species, Host.no, Stage, Host.species, # NEED RETAIN ALL THESE HERE???
+                 genus, family, order, class, phylum)%>%
+  filter(!is.na(family) | !is.na(order) | !is.na(class) | !is.na(phylum))
+```
+
+Let's calculate the host specificity index proposed by [Poulin and Mouillot 2003](LINK!!!). It accounts for the taxonomic similarity of hosts. Load two functions for calculating this index.
+
+```{r}
+#load functions
+source("host_specificity_index_calculation_functions.R")
+```
+
+Then we loop through all the parasite species to calculate the host specificity index.
+
+```{r}
+spst <- select(phy.hs, Parasite.species)%>%distinct() #unique parasite species after eliminating missing host info
+spst$hs <- NA # numeric to collect calculated host specificity index
+spst$var.hs <- NA # numeric to collect calculated variation in host specificity index
+
+for(i in seq_along(spst$Parasite.species)){
+  mv <- spst[i,]
+  ds <- filter(phy.hs, Parasite.species == mv$Parasite.species)
+  hs.out <- with(ds, hs.index(Host.species, genus, family, order, class, phylum)) # calc host spec index
+  spst$hs[i] <- hs.out[1]
+  spst$var.hs[i] <- hs.out[2]
+  rm(mv, ds, hs.out, i)
+}
+```
+
+Add the host specificity index to the species-level data frame for plotting.
+
+```{r}
+dataH.hs <- left_join(dataH.hs, spst)
+#Note these host spec values include atypical species 
+#and they were calculated omitting hosts where not all taxonomic info was available
+```
+
+The number of hosts and the taxonomic diversity of hosts do not correlate strongly. That is, these two measures of host specificity are independent of one another.
+
+```{r}
+ggplot(dataH.hs, aes(x = hosts, y = hs)) + 
+  geom_point(alpha = 0.3) + 
+  geom_smooth(se=F, color = 'darkgrey') +
+  scale_x_log10()
+```
+
+Plot the relationship between life cycle length and the host specificity index. There is a clear increase in taxonomic diversity between 1 and 2 hosts cycles, but then additional hosts do not add much
+
+```{r}
+tax.ranks <- c('genus', 'family', 'order', 'class', 'phylum') # for axis label
+
+ggplot(dataH.hs,
+       aes(x = maxLCL.fac, y = hs)) + 
+  geom_boxplot(outlier.color = "white", width = 0.9) +
+  geom_jitter(width = 0.2, height = 0, color = "red", alpha = 0.15) +
+  labs(x = "Maximum life cycle length", y = "Host specificity index") + 
+  scale_y_continuous(limits = c(1,6), breaks = c(1:6), labels = c("species", tax.ranks)) +
+  theme(panel.grid.major.x = element_blank())
+```
+
+
+
+
+
+
+
+Now we turn attention to variation within a cycle...
+
+```{r}
+#loop through the species to calculate specificity for each stage of the life cycle
+spst<-select(phy.hs, Parasite.species, Host.no, Stage)%>%distinct()
+spst$hs <- NA
+spst$var.hs <- NA
+
+for(i in seq_along(spst$Parasite.species)){
+  mv <- spst[i,]
+  ds <- filter(phy.hs, Parasite.species == mv$Parasite.species &
+                 Host.no == mv$Host.no &
+                 Stage == mv$Stage)
+  hs.out <- with(ds, hs.index(Host.species, genus, family, order, class, phylum))
+  spst$hs[i] <- hs.out[1]
+  spst$var.hs[i] <- hs.out[2]
+  rm(mv, ds, hs.out, i)
+}
+
+```
+
+
+```{r}
+#take estimated host specificity values and add them to main dataset
+mv<-match( with(dataH, paste(Parasite.species, Host.no, Stage)),
+           with(spst, paste(Parasite.species, Host.no, Stage)) )
+dataH$Host.spec.index <- spst$hs[mv]
+dataH$var.hs.index <- spst$var.hs[mv]
+rownames(dataH) <- as.character(1:length(dataH$Parasite.species))
+#Note these host spec values include atypical species 
+#and they were calculated omitting omit hosts where no taxonomic info was available
+
+
+rm(mv, phy.hs, spst)
+```
+
+
+```{r}
+#take average for each species:stage
+data.hs <- group_by(dataH, Parasite.species, Host.no, Stage)%>%
+  summarize(hs = mean(Host.spec.index),
+            var.hs = mean(var.hs.index),
+            n.host.sp = n())
+
+```
+
+
+```{r}
+#add LCL to data.hs
+LCL <- filter(dataH, Facultative != 'Postcyclic')%>% #calculate max LCL without postcyclic host
+  group_by(Parasite.species)%>%summarize(maxLCL = max(Host.no))
+data.hs$maxLCL <- LCL$maxLCL[match(data.hs$Parasite.species, LCL$Parasite.species)]
+rm(LCL)
+```
+
+
+```{r}
+qplot(data = data.hs, y = hs, x = Stage, geom='boxplot')
+```
+
+```{r}
+#host specificity over the life cycle
+#set theme
+theme.o <- theme_update(axis.text = element_text(colour="black", size = 15),
+                        axis.title = element_text(colour="black", size = 18, face = "bold", lineheight=0.25),
+                        axis.ticks = element_line(colour="black"),
+                        panel.border = element_rect(colour = "black",fill=NA),
+                        panel.grid.minor=element_blank(),
+                        panel.grid.major=element_line(color="gray",linetype = "dotted"),
+                        panel.background= element_rect(fill = NA))
+
+ggplot(data=filter(data.hs, n.host.sp!=1),
+       aes(x=factor(Host.no), y=hs, group=Parasite.species, color=as.factor(maxLCL))) +
+  geom_line(alpha=0.15) + 
+  geom_point(size=3, alpha=0.2) +
+  labs(x="\nHost",y="Host specificity index\n") +
+  scale_color_manual(values = brewer.pal(5,"Set2"))+
+  scale_x_discrete(expand=c(0.05,0.05)) +
+  scale_y_continuous(limits = c(1,5), breaks = c(1:5), labels = tax.ranks)
+
+
+#creat factors to isolate each LCL group; re-graph
+data.hs$lcl1<-0
+data.hs$lcl1[which(data.hs$maxLCL==1)]<-1
+data.hs$lcl2<-0
+data.hs$lcl2[which(data.hs$maxLCL==2)]<-1
+data.hs$lcl3<-0
+data.hs$lcl3[which(data.hs$maxLCL==3)]<-1
+data.hs$lcl4<-0
+data.hs$lcl4[which(data.hs$maxLCL > 3)]<-1
+
+#re-graph
+mypalette <- brewer.pal(5, "Set2")
+
+ggplot(data=filter(data.hs, n.host.sp!=1, lcl1==0),
+       aes(x=factor(Host.no), y=hs, group=Parasite.species)) +
+  geom_line(alpha=0.15, color = "lightgray") + 
+  geom_point(size=3, alpha=0.1, color = "lightgray") +
+  geom_point(data = filter(data.hs, n.host.sp!=1, lcl1==1),
+             size = 3, alpha = 0.33, color = mypalette[1]) +
+  labs(x="\nHost",y="Host specificity index\n") +
+  scale_x_discrete(expand=c(0.05,0.05)) +
+  scale_y_continuous(limits = c(1,5), breaks = c(1:5), labels = tax.ranks) +
+  annotate('text', x = 4.5, y = 4.5, label = '1-host cycle', color = mypalette[1], size = 5)
+
+
+ggplot(data=filter(data.hs, n.host.sp!=1, lcl2==0),
+       aes(x=factor(Host.no), y=hs, group=Parasite.species)) +
+  geom_line(alpha=0.15, color = "lightgray") + 
+  geom_point(size=3, alpha=0.1, color = "lightgray") +
+  geom_point(data = filter(data.hs, n.host.sp!=1, lcl2==1),
+             size = 3, alpha = 0.25, color = mypalette[2]) +
+  geom_line(data = filter(data.hs, n.host.sp!=1, lcl2==1),
+            alpha = 0.2, color = mypalette[2]) +
+  labs(x="\nHost",y="Host specificity index\n") +
+  scale_x_discrete(expand=c(0.05,0.05)) +
+  scale_y_continuous(limits = c(1,5), breaks = c(1:5), labels = tax.ranks) +
+  annotate('text', x = 4.5, y = 4.5, label = '2-host cycle', color = mypalette[2], size = 5)
+
+
+
+ggplot(data=filter(data.hs, n.host.sp!=1, lcl3==0),
+       aes(x=factor(Host.no), y=hs, group=Parasite.species)) +
+  geom_line(alpha=0.15, color = "lightgray") + 
+  geom_point(size=3, alpha=0.1, color = "lightgray") +
+  geom_point(data = filter(data.hs, n.host.sp!=1, lcl3==1),
+             size = 3, alpha = 0.25, color = mypalette[3]) +
+  geom_line(data = filter(data.hs, n.host.sp!=1, lcl3==1),
+            alpha = 0.2, color = mypalette[3]) +
+  labs(x="\nHost",y="Host specificity index\n") +
+  scale_x_discrete(expand=c(0.05,0.05)) +
+  scale_y_continuous(limits = c(1,5), breaks = c(1:5), labels = tax.ranks) +
+  annotate('text', x = 4.5, y = 4.5, label = '3-host cycle', color = mypalette[3], size = 5)
+
+
+ggplot(data=filter(data.hs, n.host.sp!=1, lcl4==0),
+       aes(x=factor(Host.no), y=hs, group=Parasite.species)) +
+  geom_line(alpha=0.15, color = "lightgray") + 
+  geom_point(size=3, alpha=0.1, color = "lightgray") +
+  geom_point(data = filter(data.hs, n.host.sp!=1, lcl4==1),
+             size = 3, alpha = 0.25, color = mypalette[4]) +
+  geom_line(data = filter(data.hs, n.host.sp!=1, lcl4==1),
+            alpha = 0.2, color = mypalette[4]) +
+  labs(x="\nHost",y="Host specificity index\n") +
+  scale_x_discrete(expand=c(0.05,0.05)) +
+  scale_y_continuous(limits = c(1,5), breaks = c(1:5), labels = tax.ranks) +
+  annotate('text', x = 4.5, y = 4.5, label = '>3-host cycle', color = mypalette[4], size = 5)
+
+
+
+#all on same plot, facetted
+data.hs$maxLCL2 <- data.hs$maxLCL
+data.hs$maxLCL2[which(data.hs$maxLCL2 > 3)] <- "4"
+data.hs$maxLCL2 <- factor(data.hs$maxLCL2, labels = c('1','2','3','>3'))
+ggplot(data=filter(data.hs, n.host.sp!=1),
+       aes(x = factor(Host.no), y = hs, color = maxLCL2))+
+  geom_line(aes(group = Parasite.species), alpha=0.15) + 
+  geom_point(size=3, alpha=0.1) +
+  labs(x="\nHost",y="Host specificity index\n") +
+  guides(color = FALSE) +
+  scale_x_discrete(expand=c(0.05,0.05)) +
+  scale_y_continuous(limits = c(1,5), breaks = c(1:5), labels = tax.ranks) +
+  facet_wrap(~maxLCL2, nrow = 2, ncol=2)
+#lots of white space
+```
+
+
+```{r}
+#check for negative correlation between hs in first host and second host
+hs_cov <- select(data.hs, Parasite.species, Host.no, maxLCL, hs)
+hs_cov <- spread(hs_cov, key = Host.no, value = hs)
+names(hs_cov) <- c("Parasite.species", "maxLCL", "first", "second", "third", "fourth", "fifth")
+ggplot(filter(hs_cov, maxLCL == 2), aes(x = first, y = second)) + geom_point() + 
+  geom_smooth(method='lm', se=F)
+#nothing
+ggplot(filter(hs_cov, maxLCL == 3), aes(x = second, y = third)) + geom_point() + 
+  geom_smooth(method='lm', se=F)
+#nothing
+```
+
+
+
+
+
+
+
+
+
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(RColorBrewer)
+
+options(stringsAsFactors = FALSE)
+
+setwd("C:/Users/Dan/OneDrive/Documents/Benesh/Research/LifeCycle_Database/Host_specificity_calc/")
+load("cleaned_host_taxonomy.RData")
+
+
+
+
+#add taxonomy to main host dataframe
+mv <- match(dataH$Host.species, ncbi.tax.out$sp.query)
+dataH <- cbind(dataH, ncbi.tax.out[mv, c("genus", "family", "order", "class", "phylum")])
+#take the subset of hosts with taxonomic data
+phy.hs <- select(dataH, Parasite.species, Host.no, Stage, Host.species,
+                 genus, family, order, class, phylum)%>%
+  filter(!is.na(family) | !is.na(order) | !is.na(class) | !is.na(phylum))
+
+
+#calculate specificity index
+#load needed functions
+load("host_spec_calc_functions.RData")
+
+
+#loop through the species to calculate specificity for each stage of the life cycle
+spst<-select(phy.hs, Parasite.species, Host.no, Stage)%>%distinct()
+spst$hs <- NA
+spst$var.hs <- NA
+
+for(i in seq_along(spst$Parasite.species)){
+  mv <- spst[i,]
+  ds <- filter(phy.hs, Parasite.species == mv$Parasite.species &
+                 Host.no == mv$Host.no &
+                 Stage == mv$Stage)
+  hs.out <- with(ds, hs.index(Host.species, genus, family, order, class, phylum))
+  spst$hs[i] <- hs.out[1]
+  spst$var.hs[i] <- hs.out[2]
+  rm(mv, ds, hs.out, i)
+}
+
+
+
+
+
+
+#import life history data
+load("C:/Users/Dan/OneDrive/Documents/Benesh/Research/LifeCycle_Database/prelim_analyses_Sept16/Sept16_presentations_dataL.RData")
+#consider re-wrangling to make sure calculations of relative size increase are ok
+
+
+#add estimated host specificity values to LH data
+mv<-match( with(dataL.sp, paste(Parasite.species, Host.no, Stage)),
+           with(spst, paste(Parasite.species, Host.no, Stage)) )
+dataL.sp$host.spec.index <- spst$hs[mv]
+dataL.sp$var.hs.index <- spst$var.hs[mv]
+
+#add number of host species to LH data
+n.host.sp <- group_by(dataH, Parasite.species, Host.no, Stage)%>%
+  summarise(n.host.sp = n())
+mv<-match( with(dataL.sp, paste(Parasite.species, Host.no, Stage)),
+           with(n.host.sp, paste(Parasite.species, Host.no, Stage)) )
+dataL.sp$n.host.sp <- n.host.sp$n.host.sp[mv]
+rm(n.host.sp, mv)
+
+
+
+tax.ranks <- c("genus", "family", "order", "class", "phylum")
+
+
+ggplot(dataL.sp, aes(x = Rel.prop.inc, y = host.spec.index)) + geom_point() + facet_grid(~Def.int) +
+  geom_smooth(method = 'lm', se=F)
+
+
+ggplot(filter(dataL.sp, Facultative == 'no'),
+       aes(x = Rel.prop.inc, y = host.spec.index, color = Def.int)) + geom_point() +
+  geom_smooth(method = 'lm', se=F)
+
+
+
+dataL.sp$Def.int2 <- "Definitive"
+dataL.sp$Def.int2[which(dataL.sp$Def.int == "int")] <- "Intermediate"
+ggplot(filter(dataL.sp, maxLCL > 1),
+       aes(x = Rel.size.inc, y = host.spec.index, color = Def.int2)) + 
+  geom_point() +
+  geom_smooth(method = 'lm', se=F) + 
+  scale_y_continuous(limits = c(1,5), breaks = c(1:5), labels = tax.ranks) +
+  theme_bw() + theme(legend.title = element_blank(),
+                     legend.position = c(1,1),
+                     legend.justification = c(1,1)) +
+  labs(x = "Orders of magnitude size increase in host", y = "Host specificity index")
+
+
+
+
+library(lme4)
+out <- lmer(host.spec.index ~ Rel.size.inc * Def.int + (1 | Parasite.species),
+            data = filter(dataL.sp, maxLCL > 1 & Facultative == 'no'))
+summary(out)
+anova(out)
+
+```
+
