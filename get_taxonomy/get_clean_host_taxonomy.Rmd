@@ -15,8 +15,11 @@ library(taxize)
 
 options(stringsAsFactors = FALSE)
 
-setwd("../data")
-dataH <- read.csv(file="CLC_database_hosts.csv", header = TRUE, sep=",")
+# set wd
+Rmd_loc <- dirname( rstudioapi::getActiveDocumentContext()$path ) # Rmd file location
+setwd(Rmd_loc)
+
+dataH <- read.csv(file="../data/CLC_database_hosts.csv", header = TRUE, sep=",")
 ```
 
 Then we isolate the set of host species and genera, for which we desire taxonomies.
@@ -252,6 +255,5 @@ Lastly, we clean up the workspace and save the taxonomy table to file.
 rm(common.tax.groups, fill_in_tax_level, get_straddling_tax_levels, i, j,
    ncbi.tax.out2, rank, replacement_level, tax.ranks)
 
-setwd("../data")
-write.table(ncbi.tax.out, file = "ncbi_host_taxonomy.csv", sep = ",", row.names = F) 
+write.table(ncbi.tax.out, file = "../data/ncbi_host_taxonomy.csv", sep = ",", row.names = F) 
 ```

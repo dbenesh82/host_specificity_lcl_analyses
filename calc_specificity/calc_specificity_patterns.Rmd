@@ -22,10 +22,13 @@ theme.o <- theme_update(axis.text = element_text(colour="black", size = 15),
                         panel.grid.major=element_line(color="gray",linetype = "dotted"),
                         panel.background= element_rect(fill = NA))
 
-setwd("../data")
+
+# set wd
+Rmd_loc <- dirname( rstudioapi::getActiveDocumentContext()$path ) # Rmd file location
+setwd(Rmd_loc)
 
 # load host database
-dataH <- read.csv(file="CLC_database_hosts.csv", header = TRUE, sep=",")
+dataH <- read.csv(file="../data/CLC_database_hosts.csv", header = TRUE, sep=",")
 ```
 
 **Host specificity across entire life cycle**
@@ -54,16 +57,13 @@ outfig <- ggplot(dataH.hs,
                  aes(x = maxLCL.fac, y = hosts)) + 
   geom_boxplot(outlier.color = "white", width = 0.9) +
   geom_jitter(width = 0.2, height = 0, color = "red", alpha = 0.15) +
-  labs(x = "Life cycle length", y = "Hosts in the database") + 
+  labs(x = "Life cycle length", y = "Host range") + 
   scale_y_log10() +
   theme(panel.grid.major.x = element_blank())
 outfig
 
 # want to export this figure, for use in word doc
-setwd("../figs")
-png(filename = "hostrange_vs_lcl.png", width = 500, height = 450, units = "px")
-outfig
-dev.off()
+ggsave(filename = "../figs/hostrange_vs_lcl.png", width = 5, height = 4.5, units = "in")
 ```
 
 A parasite with a direct cycle has a median of two-hosts, whereas a parasite with 3 or more hosts has a median of over 21 hosts.
@@ -81,8 +81,7 @@ summary(lm(log10(hosts) ~ maxLCL, data = dataH.hs))
 Host range is a simple metric. For example, it does not account for the taxonomic dissimilarity of hosts. A parasite may infect many taxonomically similar hosts (high host range, low dissimilarity) or few taxonomically divergent hosts (low host range, high dissimilarity). Let's load the host taxonomy data and calculate a more complex measure of specificity. 
 
 ```{r, message=FALSE, warning=FALSE}
-setwd("../data")
-host.tax <- read.csv(file="ncbi_host_taxonomy.csv", header = TRUE, sep=",") # taxonomy from NCBI
+host.tax <- read.csv(file="../data/ncbi_host_taxonomy.csv", header = TRUE, sep=",") # taxonomy from NCBI
 ```
 
 Add taxonomy to the main host table.
@@ -163,10 +162,7 @@ outfig <- ggplot(dataH.hs,
 outfig
 
 # want to export this figure, for use in word doc
-setwd("../figs")
-png(filename = "hostdissimilarity_vs_lcl.png", width = 500, height = 450, units = "px")
-outfig
-dev.off()
+ggsave(filename = "../figs/hostdissimilarity_vs_lcl.png", width = 5, height = 4.5, units = "in")
 ```
 
 
@@ -354,8 +350,7 @@ ggplot(filter(hs_cov, maxLCL == 2),
 We can examine another potential tradeoff related to host specificity. Namely, that generalist stages grow less. A common idea about the evolution of specificity is that a 'jack-of-all-trades is a master of none'. Some maybe generalists (jack-of-all-trades) pay for their wide host ranges with less growth. By contrast, specialists (masters) grow extensively. Let's import the parasite body size data from the life cycle database.
 
 ```{r, message=FALSE, warning=FALSE}
-setwd("../data")
-dataL <- read.csv(file="CLC_database_lifehistory.csv", header = TRUE, sep=",")
+dataL <- read.csv(file="../data/CLC_database_lifehistory.csv", header = TRUE, sep=",")
 ```
 
 Convert length and width measurements into estimates of biomass.
@@ -463,10 +458,7 @@ outfig <- ggplot(filter(growth_df, hosts > 1),
 outfig
 
 # want to export this figure, for use in word doc
-setwd("../figs")
-png(filename = "hostdissimilarity_vs_growth.png", width = 500, height = 450, units = "px")
-outfig
-dev.off()
+ggsave(filename = "../figs/hostdissimilarity_vs_growth.png", width = 5, height = 4.5, units = "in")
 ```
 
 It is noisy, but negative. More growth at a given stage is associated with being more host specific at that stage. And this does not seem to differ depending on whether it is an adult or larval stage. A simple linear regression is also significant.
