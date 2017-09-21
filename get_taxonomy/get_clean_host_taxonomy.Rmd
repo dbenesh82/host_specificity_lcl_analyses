@@ -15,7 +15,7 @@ library(taxize)
 
 options(stringsAsFactors = FALSE)
 
-setwd("..")
+setwd("../data")
 dataH <- read.csv(file="CLC_database_hosts.csv", header = TRUE, sep=",")
 ```
 
@@ -252,6 +252,6 @@ Lastly, we clean up the workspace and save the taxonomy table to file.
 rm(common.tax.groups, fill_in_tax_level, get_straddling_tax_levels, i, j,
    ncbi.tax.out2, rank, replacement_level, tax.ranks)
 
-setwd("..")
+setwd("../data")
 write.table(ncbi.tax.out, file = "ncbi_host_taxonomy.csv", sep = ",", row.names = F) 
 ```

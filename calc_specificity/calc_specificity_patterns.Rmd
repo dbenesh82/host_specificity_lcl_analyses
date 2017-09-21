@@ -25,7 +25,7 @@ theme.o <- theme_update(axis.text = element_text(colour="black", size = 15),
                         panel.grid.major=element_line(color="gray",linetype = "dotted"),
                         panel.background= element_rect(fill = NA))
 
-setwd("..")
+setwd("../data")
 
 # load host database
 dataH <- read.csv(file="CLC_database_hosts.csv", header = TRUE, sep=",")
@@ -76,7 +76,7 @@ summary(lm(log10(hosts) ~ maxLCL, data = dataH.hs))
 Host range, the number of hosts from which a parasite has been recorded, is a simple metric. For example, it does not account for the taxonomic dissimilarity of hosts. We can load host taxonomy data and calculate a little more complex measure of specificity. 
 
 ```{r}
-setwd("..")
+setwd("../data")
 host.tax <- read.csv(file="ncbi_host_taxonomy.csv", header = TRUE, sep=",") # taxonomy from NCBI
 ```
 
