@@ -3,7 +3,7 @@ title: "Host specificity analyses - get and clean the host taxonomy"
 output: github_document
 ---
 
-**Background**: I published a [database](http://onlinelibrary.wiley.com/doi/10.1002/ecy.1680/suppinfo) of helminth (parasitic worm) life cycles. Complex life cycle parasites infect dissimilar hosts over the course of their life cycles. This script is to get the taxonomic data for the hosts to calculate host specificity indexes.
+**Background**: I use a [database](http://onlinelibrary.wiley.com/doi/10.1002/ecy.1680/suppinfo) of helminth (parasitic worm) life cycles to examine the diversity of hosts exploited by these parasites. Complex life cycle parasites infect dissimilar hosts over the course of their life cycles, e.g. first an invertebrate and then a vertebrate. This generalism is presumed to be costly. This script queries a taxonomic database to retrieve taxonomic information for the hosts in the database. This information is then used to calculate host specificity indexes.
 
 First, import the libraries and the hosts in the life cycle database.
 ```{r, message=FALSE, warning=FALSE}
@@ -34,7 +34,7 @@ g.sp.vec <- unique(dataH$h.genus)
 g.sp.vec <- sort(na.omit(g.sp.vec))
 ```
 
-To get the taxonomies, we have to query the NCBI for each host species. This code is simply to get an idea how long it takes. It's blocked out because it does not need to be run everytime.
+To get the taxonomies, we query the NCBI database for each host species. This code is simply to get an idea how long it takes. It's blocked out because it does not need to be run everytime.
 
 ```{r}
 #QUERY NCBI DATABASE
@@ -56,7 +56,7 @@ For 3500+ host species, we query the NCBI database to get the uniques ids for ea
 ids.for.classif<-get_uid_(h.sp.vec)
 ```
 
-This returns a list for each species that includes a 'uid', the unique identifier in NCBI. We want to extract that, as well as some other data from the list. The next block loops through each species to extract ids, string queried (species or genus name), and taxonomic level of the query (species or genus). When host species were not found in the NCBI database, the genus name was queried. 
+This returns a list for each species that includes a 'uid', the unique identifier in NCBI. We want to extract that, as well as some other data from the list. The next block loops through each species to extract ids, the string queried (species or genus name), and the taxonomic level of the query (species or genus). When host species were not found in the NCBI database, the genus name was queried. 
 
 ```{r}
 # empty character vectors for storing data collected in loop
@@ -152,13 +152,13 @@ rm(df.ncbi, gx, i, i.vec, ids, m.df, q.rank, tg, tg.vec, tst, tx)
 
 
 
-Let's look at missing data in the classical taxonomic hierarchy (genus, family, order, class, phylum). Quite a few host species lack information for order or class.
+The downloaded taxonomies are not consistent across all hosts species. For example, when we just look at the classical taxonomic hierarchy (genus, family, order, class, phylum), we see quite a few host species are missing order or class.
 
 ```{r}
 sapply(select(ncbi.tax.out, genus, family, order, class, phylum), function(x) sum(is.na(x)))
 ```
 
-Instead of ignoring species with this missing taxonomic information, we can try to impute it with a quick and dirty algorithm. We'll create a couple functions to help execute this. The first function returns other taxonomic ranks (e.g. subgenus) that straddle the common ones (genus)
+Instead of ignoring species with missing taxonomic information, we can try to impute it with a quick and dirty algorithm. We'll create a couple functions to help with this. The first function returns other taxonomic ranks (e.g. subgenus) that straddle the common ones (genus).
 
 ```{r}
 #function to return the taxonomic ranks straddling a particular 'main' taxonomic rank
@@ -177,7 +177,7 @@ get_straddling_tax_levels <- function(tax_level) {
 }
 ```
 
-The function `get_straddling_tax_levels` is a helper in next function, which replaces missing taxonomic ranks with one of the straddling ranks. Sometime multiple straddling ranks will be available, but it returns the most common one.
+The function `get_straddling_tax_levels` is a helper for the next function, which replaces missing taxonomic ranks with the value from one of the straddling ranks. Sometime multiple straddling ranks will be available, but it returns the most common one.
 
 ```{r}
 # function to replace missing taxonomic rank
@@ -203,9 +203,9 @@ fill_in_tax_level <- function(species, tax_level_missing){
 }
 ```
 
+We also create a table for use in the `fill_in_tax_level` function. It records the number of times any given taxonomic name appears in data, and is used to judge which taxa is the best for filling in missing data. Essentially, when imputing taxonomic values, we are preferencing commoness. On the one hand, this may reduce the observed taxonomic diversity of hosts for a given parasite, as certain hosts are likely to share the same imputed taxonomies. On the other hand, the observed taxonomic diversity of hosts is probably higher than if species were ignored if they lacked full taxonomic hierarchies.
+
 ```{r}
-# create a df which records the number of times any given taxonomic name appears
-# this is used to judge which taxa is the best for filling in missing data
 common.tax.groups <- select(ncbi.tax.out, class:tribe)%>%
   gather(key = "tax.rank", value = "tax.name", class:tribe)%>%
   group_by(tax.name)%>%
@@ -213,7 +213,7 @@ common.tax.groups <- select(ncbi.tax.out, class:tribe)%>%
   na.omit()
 ```
 
-Then we fill in the missing data.
+Then we fill in the missing data, by looping over the taxonomic ranks and the species.
 
 ```{r}
 ncbi.tax.out2 <- ncbi.tax.out #make a copy to check how much was filled in
@@ -241,10 +241,12 @@ for(i in seq_along(tax.ranks)){ #the first loop goes across main taxonomic colum
 Check how much was filled in. An improvement.
 
 ```{r}
+#PROBABLY CBIND THESE TO MAKE A NICER OUT!  
 sapply(ncbi.tax.out2[, tax.ranks], function(x) sum(is.na(x))) #before
 sapply(ncbi.tax.out[, tax.ranks], function(x) sum(is.na(x))) #after
 ```
 
+Lastly, we clean up the workspace and save the taxonomy table to file.
 
 ```{r}
 rm(common.tax.groups, fill_in_tax_level, get_straddling_tax_levels, i, j,
