@@ -15,16 +15,12 @@ library(taxize)
 
 options(stringsAsFactors = FALSE)
 
-# set wd
-Rmd_loc <- dirname( rstudioapi::getActiveDocumentContext()$path ) # Rmd file location
-setwd(Rmd_loc)
-
 dataH <- read.csv(file="../data/CLC_database_hosts.csv", header = TRUE, sep=",")
 ```
 
 Then we isolate the set of host species and genera, for which we desire taxonomies.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 # extract genus from host species name
 dataH <- mutate(dataH, h.genus = unlist(strsplit(as.character(Host.species), split=" .*$")))%>%
   select(Host.species, h.genus)
