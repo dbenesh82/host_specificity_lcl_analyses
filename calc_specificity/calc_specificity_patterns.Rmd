@@ -458,13 +458,13 @@ outfig
 ggsave(filename = "../figs/hostdissimilarity_vs_growth.png", width = 5, height = 4.5, units = "in")
 ```
 
-It is noisy, but negative. More growth at a given stage is associated with being more host specific at that stage. And this does not seem to differ depending on whether it is an adult or larval stage. A simple linear regression is also significant.
+It is noisy, but negative. More growth at a given stage is associated with being more host specific at that stage. And this does not seem to differ between adult and larval stages. A simple linear regression is also significant.
 
 ```{r, message=FALSE, warning=FALSE}
 summary(lm(hs ~ rel_diff, growth_df))
 ```
 
-These data are not necessarily independent, given that multiple growth measurements can come from a single species (e.g. growth in first host, second host, etc.). Previously, we saw that specificity in first and second hosts is uncorrelated, so it is not likely that this matters. Still, we can take the previous plot and see if the parasite species seems to matter.
+Each point on the previous plot is not necessarily independent, given that multiple growth measurements can come from a single species (e.g. growth in first host, second host, etc.). Previously, we saw that specificity in first and second hosts is uncorrelated, so it is not likely that this matters. Still, we can take the previous plot and see if the parasite species seems to matter.
 
 ```{r, message=FALSE, warning=FALSE}
 ggplot(filter(growth_df, hosts > 1),
@@ -477,7 +477,7 @@ ggplot(filter(growth_df, hosts > 1),
   labs(x = "Orders of magnitude size increase in host", y = "Host specificity index")
 ```
 
-The lines here represent connect values for the same species. There is no obvious pattern, so it is not like species are...
+The lines here connect values for the same species. There is no obvious pattern, so it is not like big species are consistently more host specific or that high specificity at one stage necessitates low specificity at another stage.
 
 We can check this with a statistical model. We fit a mixed model, with parasite species as a random effect. This random effect explains essentially none of the variation in host specificity. When we add growth to the model, we see a significant improvement, consistent with the observed negative trend.
 
@@ -492,3 +492,5 @@ summary(out2)
 anova(out1, out2)
 
 ```
+
+The absence of a 'species effect' does not necessarily mean it is irrelevant. It may just be that at the species level there is too much variation, perhaps measurement error, to see a trend. There might be broader phylogenetic trends, where one parasite clade is consistently generalist at one stage and specific at another. In other words, we need a parasite phylogeny to better evaluate these patterns.
