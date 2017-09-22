@@ -3,7 +3,7 @@ title: "Host specificity analyses - calculate and analyze host specificity"
 output: github_document
 ---
 
-**Background**: This script examines patterns of host specificity in complex life cycles. I use a [database](http://onlinelibrary.wiley.com/doi/10.1002/ecy.1680/suppinfo) of helminth (parasitic worm) life cycles to examine the diversity of hosts exploited by these parasites. Complex life cycle parasites infect dissimilar hosts during their life, e.g. an invertebrate as first host and a vertebrate as second host. Do complex life cycle parasites infect more hosts than simple life cycle parasites? How does specificity vary within cycles (i.e. larval vs adult stage). I use two specificity indices: host range and a specificity index that accounts for the taxonomic similarity of hosts. To calculate this second index, we need taxonomic information for each host. This data can be downloaded by running the script [get_clean_host_taxonomy]("../get_taxonomy/get_clean_host_taxonomy.RMD").
+**Background**: This script examines patterns of host specificity in complex life cycles. I use a [database](http://onlinelibrary.wiley.com/doi/10.1002/ecy.1680/suppinfo) of helminth (parasitic worm) life cycles to examine the diversity of hosts exploited by these parasites. Complex life cycle parasites infect dissimilar hosts during their life, e.g. an invertebrate as first host and a vertebrate as second host. Do complex life cycle parasites infect more hosts than simple life cycle parasites? How does specificity vary within cycles (i.e. larval vs adult stage). I use two specificity indices: host range and a specificity index that accounts for the taxonomic similarity of hosts. To calculate this second index, we need taxonomic information for each host. Taxonomic data can be downloaded from the NCBI by running the script [get_clean_host_taxonomy]("../get_taxonomy/get_clean_host_taxonomy.RMD").
 
 Start as usual by loading libraries, setting a plotting theme, and importing data
 ```{r, message=FALSE, warning=FALSE}
@@ -23,10 +23,6 @@ theme.o <- theme_update(axis.text = element_text(colour="black", size = 15),
                         panel.background= element_rect(fill = NA))
 
 
-# set wd
-Rmd_loc <- dirname( rstudioapi::getActiveDocumentContext()$path ) # Rmd file location
-setwd(Rmd_loc)
-
 # load host database
 dataH <- read.csv(file="../data/CLC_database_hosts.csv", header = TRUE, sep=",")
 ```
@@ -35,7 +31,7 @@ dataH <- read.csv(file="../data/CLC_database_hosts.csv", header = TRUE, sep=",")
 
 First, we look at the host range for a parasite, pooled across all stages (larval and adult). The host range is just the number of hosts from which a parasite has been recorded. Some parasite cycles were not complete (i.e. a host was assumed but not verified). We'll remove the parasite species where the life cycle is only partially known.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 # identify and remove 'incomplete' parasite species
 rp <- filter(dataH, Missing.info == 1, is.na(Host.species))%>%
   select(Parasite.species)%>%distinct()
@@ -49,10 +45,12 @@ dataH.hs <- group_by(dataH, Parasite.species)%>%
 When we plot host range vs life cycle length, we see the assumption that parasites with long cycles have bigger host ranges appears valid.
 
 ```{r, message=FALSE, warning=FALSE}
-#make life cycle length a factor and pool the few parasites with life cycles longer than three hosts
-dataH.hs <- mutate(dataH.hs, maxLCL.fac = if_else(maxLCL > 3, as.integer(4), maxLCL),
-                   maxLCL.fac = factor(maxLCL.fac, labels = c("1", "2", "3", ">3")))
+# make life cycle length a factor and pool the few parasites with life cycles longer than three hosts
+dataH.hs <- mutate(dataH.hs, maxLCL.fac = if_else(maxLCL > 3, "4", as.character(maxLCL)))%>%
+  mutate(maxLCL.fac = factor(maxLCL.fac, labels = c("1", "2", "3", ">3")))
+```
 
+```{r, message=FALSE, warning=FALSE}
 outfig <- ggplot(dataH.hs,
                  aes(x = maxLCL.fac, y = hosts)) + 
   geom_boxplot(outlier.color = "white", width = 0.9) +
@@ -62,19 +60,20 @@ outfig <- ggplot(dataH.hs,
   theme(panel.grid.major.x = element_blank())
 outfig
 
-# want to export this figure, for use in word doc
+# want to export this figure, for use in word doc; add (A) for panel
 ggsave(filename = "../figs/hostrange_vs_lcl.png", width = 5, height = 4.5, units = "in")
+ggsave(filename = "../figs/hostrange_vs_lcl.svg", width = 5, height = 4.5, units = "in")
 ```
 
 A parasite with a direct cycle has a median of two-hosts, whereas a parasite with 3 or more hosts has a median of over 21 hosts.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 tapply(dataH.hs$hosts, dataH.hs$maxLCL.fac, median, na.rm=T)
 ```
 
 The regression is also clearly significant.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 summary(lm(log10(hosts) ~ maxLCL, data = dataH.hs))
 ```
 
@@ -86,7 +85,7 @@ host.tax <- read.csv(file="../data/ncbi_host_taxonomy.csv", header = TRUE, sep="
 
 Add taxonomy to the main host table.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 dataH <- left_join(dataH, 
                    select(host.tax, sp.query, genus, family, order, class, phylum),
                    by = c("Host.species" = "sp.query"))
@@ -94,13 +93,13 @@ dataH <- left_join(dataH,
 
 This is how much missing taxonomic data is in the combined table.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 sapply(select(dataH, Host.species, genus:phylum), function(x) sum(is.na(x)))
 ```
 
 Before calculating a specificity index, we need to reduce the data to just those hosts with a full taxonomic hierarchy, otherwise specificity calculations are not comparable.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 phy.hs <- select(dataH, Parasite.species, Host.no, Stage, Host.species, # retain host.no and stage, as this table is used again below when calculating specificity at level of stage
                  genus, family, order, class, phylum)%>%
   filter(!is.na(family) | !is.na(order) | !is.na(class) | !is.na(phylum))
@@ -108,14 +107,13 @@ phy.hs <- select(dataH, Parasite.species, Host.no, Stage, Host.species, # retain
 
 Let's calculate the host specificity index proposed by [Poulin and Mouillot 2003](LINK!!!) that accounts for the taxonomic similarity of hosts. We load a couple functions from an external file for calculating this index.
 
-```{r}
-#load functions
+```{r, message=FALSE, warning=FALSE}
 source("host_specificity_index_calculation_functions.R")
 ```
 
 Then we loop through all the parasite species to calculate the host specificity index.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 spst <- select(phy.hs, Parasite.species)%>%distinct() # unique parasite spp after removing hosts with missing tax data
 spst$hs <- NA # numeric to collect calculated host specificity index
 spst$var.hs <- NA # numeric to collect calculated variation in host specificity index
@@ -139,7 +137,7 @@ dataH.hs <- left_join(dataH.hs, spst)
 
 Host range and the host specificity index do not correlate. That is, these two measures of host specificity are independent of one another.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 ggplot(dataH.hs, aes(x = hosts, y = hs)) + 
   geom_point(alpha = 0.3) + 
   geom_smooth(se=F, color = 'darkgrey') +
@@ -163,6 +161,7 @@ outfig
 
 # want to export this figure, for use in word doc
 ggsave(filename = "../figs/hostdissimilarity_vs_lcl.png", width = 5, height = 4.5, units = "in")
+ggsave(filename = "../figs/hostdissimilarity_vs_lcl.svg", width = 5, height = 4.5, units = "in")
 ```
 
 
@@ -170,15 +169,14 @@ ggsave(filename = "../figs/hostdissimilarity_vs_lcl.png", width = 5, height = 4.
 
 Now we turn attention to variation within a cycle. Instead of calculating host specificity across the whole cycle (i.e. larva and adult stages pooled), we want to calculate host specificity for each life stage separately. We are interested in whether certain stage in a life cycle are more or less specific. First, we recalculate host range at the level of stage for each species.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 dataH.hs <- group_by(dataH, Parasite.species, Host.no, Stage)%>%
   summarise(hosts = n())
 ```
 
 Then we loop through the 'species stages' and calculate the host specificity index.
 
-```{r}
-
+```{r, message=FALSE, warning=FALSE}
 spst<-select(phy.hs, Parasite.species, Host.no, Stage)%>%distinct() # unique parasite stages for each species
 spst$hs <- NA # numeric to collect calculated host specificity index
 spst$var.hs <- NA # numeric to collect calculated variation in host specificity index
@@ -198,7 +196,7 @@ for(i in seq_along(spst$Parasite.species)){
 
 Add host specificity to the table at the level of 'species stage'.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 #take estimated host specificity values and add them to table dataset
 dataH.hs <- left_join(dataH.hs, spst)
 rm(phy.hs, spst)
@@ -216,7 +214,7 @@ ggplot(dataH.hs, aes(x = hosts, y = hs)) +
 
 We can now also compare larval vs adult stages. The host ranges of larvae and adults are comparable. 
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 dataH.hs <- mutate(dataH.hs, stage2 = if_else(Stage == "adult", "adult", "larva"))
 
 ggplot(filter(dataH.hs, hosts > 1), # ignore cases where parasite recorded only in one host
@@ -230,7 +228,7 @@ ggplot(filter(dataH.hs, hosts > 1), # ignore cases where parasite recorded only 
 
 But larval stages tend to infect a bit broader diversity of hosts. It is also worth noting that, across the whole life cycle, a typical complex life cycle parasite species will infect hosts from different classes or even phyla. By contrast, a given stage rarely infects hosts belonging to different classes.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 ggplot(filter(dataH.hs, hosts > 1), # ignore cases where parasite recorded only in one host
        aes(x = stage2, y = hs)) +
   geom_boxplot(outlier.color = "white", width = 0.9) +
@@ -249,7 +247,7 @@ dataH.hs <- left_join(dataH.hs, LCL)
 
 Then we plot a slopegraph showing how host specificity varies across the hosts in the life cycle. The plot is pretty messy; it is hard to distinguish between parasites with different life cycle lengths. It probably looks better when we separate out each life cycle group.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 mypalette <- brewer.pal(5, "Set2")
 
 ggplot(data=filter(dataH.hs, hosts > 1),
@@ -265,7 +263,7 @@ ggplot(data=filter(dataH.hs, hosts > 1),
 
 Make a plot for each life cycle length separately, in which the group-of-interest is highlighted and overlaid on the remaining species.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 g1 <- ggplot(data=filter(dataH.hs, hosts > 1, maxLCL != 1),
        aes(x=factor(Host.no), y=hs, group=Parasite.species)) +
   geom_line(alpha=0.15, color = "lightgray") + 
@@ -277,7 +275,7 @@ g1 <- ggplot(data=filter(dataH.hs, hosts > 1, maxLCL != 1),
   scale_y_continuous(limits = c(1,5), breaks = c(1:5), labels = tax.ranks) +
   annotate('text', x = 4.5, y = 4.5, label = '1-host cycle', color = mypalette[1], size = 5)
 ```
-```{r}
+```{r, message=FALSE, warning=FALSE}
 g2 <- ggplot(data=filter(dataH.hs, hosts > 1, maxLCL != 2),
        aes(x=factor(Host.no), y=hs, group=Parasite.species)) +
   geom_line(alpha=0.15, color = "lightgray") + 
@@ -291,7 +289,7 @@ g2 <- ggplot(data=filter(dataH.hs, hosts > 1, maxLCL != 2),
   scale_y_continuous(limits = c(1,5), breaks = c(1:5), labels = tax.ranks) +
   annotate('text', x = 4.5, y = 4.5, label = '2-host cycle', color = mypalette[2], size = 5)
 ```
-```{r}
+```{r, message=FALSE, warning=FALSE}
 g3 <- ggplot(data=filter(dataH.hs, hosts > 1, maxLCL != 3),
        aes(x=factor(Host.no), y=hs, group=Parasite.species)) +
   geom_line(alpha=0.15, color = "lightgray") + 
@@ -305,7 +303,7 @@ g3 <- ggplot(data=filter(dataH.hs, hosts > 1, maxLCL != 3),
   scale_y_continuous(limits = c(1,5), breaks = c(1:5), labels = tax.ranks) +
   annotate('text', x = 4.5, y = 4.5, label = '3-host cycle', color = mypalette[3], size = 5)
 ```
-```{r}
+```{r, message=FALSE, warning=FALSE}
 g4 <- ggplot(data=filter(dataH.hs, hosts > 1, maxLCL <= 3),
        aes(x=factor(Host.no), y=hs, group=Parasite.species)) +
   geom_line(alpha=0.15, color = "lightgray") + 
@@ -329,7 +327,7 @@ multiplot(g1, g3, g2, g4, cols = 2)
 
 In my opinion, no patterns really jump out of thes slopegraphs. One trend is that worm are rather generalist in the second intermediate host in three-host cycles. Perhaps the most important take away is that host specificty can change a lot over a cycle. The abundance of crossing lines (i.e. specificity can be very high in one stage and low in the next, or vice versa) could suggest there is a tradeoff across stages. To look for such a tradeoff, we need to make the long data wide.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 hs_cov <- select(dataH.hs, Parasite.species, Host.no, maxLCL, hs)%>%
   spread(key = Host.no, value = hs)
 names(hs_cov) <- c("Parasite.species", "maxLCL", "first", "second", "third", "fourth", "fifth")
@@ -337,7 +335,7 @@ names(hs_cov) <- c("Parasite.species", "maxLCL", "first", "second", "third", "fo
 
 And then we check for a negative correlation in host specificity between consecutive stages. We just look at the relationship between the first host and second host for parasites with two-host life cycles. It is the most common combination in the data. There is no indication of a tradeoff.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 ggplot(filter(hs_cov, maxLCL == 2), 
        aes(x = first, y = second)) + 
   geom_point(alpha = 0.3) + 
@@ -355,7 +353,7 @@ dataL <- read.csv(file="../data/CLC_database_lifehistory.csv", header = TRUE, se
 
 Convert length and width measurements into estimates of biomass.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 dataL <- mutate(dataL, biovolume = 
                   if_else(Shape %in% c("cylinder", "thread-like", "whip"), 
                           pi * (Width/2)^2 * Length, # calculate volume as a cylinder
@@ -366,17 +364,16 @@ dataL <- mutate(dataL, biovolume =
                 biovolume = biovolume * 1.1) # covert to biomass with assumed 1.1. g/cm3 tissue density 
 ```
 
-
 For each parasite species, we want to calculate how much growth occurs in each stage. But before doing that, we should eliminate a few troublesome values (species with asexual reproduction as larvae and adult male measurements).
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 dataL <- filter(dataL, is.na(Asexual))%>% # remove data for asexual species
   filter( !(Stage == 'adult' & Sex == 'm') ) # remove adult males
 ```
 
 Life starts as a propagule, and there are multiple propagule size measurements for a given species. If the egg hatches, we want to take the free larva stage. If it does not hatch, we would like the embryo stage (this is what hatches from the egg and better represents initial size at growth). However, embryo sizes were not always reported, so in those case where embryo size was absent, we took egg size. This assumes that the size difference between embryo and egg is rather small, especially relative to the amount of growth conducted in the first host.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 # id species that hatch or not
 eggos <- filter(dataL, Host.no == 0)%>%
   select(Parasite.species, Egg.hatch)%>%
@@ -406,20 +403,20 @@ rm(eggos, eggos2)
 
 Remove propagule measurements that do not best reflect the initial growth size.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 dataL <- filter(dataL, !(Host.no == 0 & Stage != propagule_selector))
 ```
 
 Average body size for the stages for each species.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 dataL.sp <- group_by(dataL, Parasite.species, Host.no, Stage)%>%
   summarize(biovolume = mean(biovolume, na.rm=T))
 ```
 
 Then we calculate absolute and relative body size differences between consecutive life stages, i.e. how much worms grow at a certain life stage.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 dataL.sp <- arrange( ungroup(dataL.sp), Parasite.species, Host.no)%>% # arrange by species and host.no
   mutate(biov = lag(x = biovolume, 1))%>% # make a variable representing size in previous stage
   mutate(abs_diff = biovolume - biov, # absolute size diff
@@ -436,13 +433,13 @@ dataL.sp <- filter(dataL.sp, !is.na(abs_diff))%>%
 
 And we combine growth and host specificity dataframes that are at the 'species stage' level.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 growth_df <- left_join(dataH.hs, dataL.sp)
 ```
 
 Plot the relationship between host specificity and relative growth (i.e. the orders of magnitude increase in size).
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 outfig <- ggplot(filter(growth_df, hosts > 1),
                  aes(x = rel_diff, y = hs, color = stage2)) + 
   geom_point(alpha = 0.5) +
@@ -463,13 +460,13 @@ ggsave(filename = "../figs/hostdissimilarity_vs_growth.png", width = 5, height =
 
 It is noisy, but negative. More growth at a given stage is associated with being more host specific at that stage. And this does not seem to differ depending on whether it is an adult or larval stage. A simple linear regression is also significant.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 summary(lm(hs ~ rel_diff, growth_df))
 ```
 
 These data are not necessarily independent, given that multiple growth measurements can come from a single species (e.g. growth in first host, second host, etc.). Previously, we saw that specificity in first and second hosts is uncorrelated, so it is not likely that this matters. Still, we can take the previous plot and see if the parasite species seems to matter.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 ggplot(filter(growth_df, hosts > 1),
        aes(x = rel_diff, y = hs)) + 
   geom_line(aes(group = Parasite.species), alpha = 0.5, color = 'gray') +
@@ -484,7 +481,7 @@ The lines here represent connect values for the same species. There is no obviou
 
 We can check this with a statistical model. We fit a mixed model, with parasite species as a random effect. This random effect explains essentially none of the variation in host specificity. When we add growth to the model, we see a significant improvement, consistent with the observed negative trend.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(lme4)
 
 out1 <- lmer(hs ~ stage2 + (1 | Parasite.species),
