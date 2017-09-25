@@ -317,11 +317,15 @@ g4 <- ggplot(data=filter(dataH.hs, hosts > 1, maxLCL <= 3),
   annotate('text', x = 4.5, y = 4.5, label = '>3-host cycle', color = mypalette[4], size = 5)
 ```
 
-To facilitate comparisons, we put all 4 plots together. The [multiplot](http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/) function was taken from the R graphics cookbook site.
+To facilitate comparisons, we put all 4 plots together. The [multiplot](http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/) function was taken from the R graphics cookbook site. 
 
 ```{r, message=FALSE, warning=FALSE}
 source("multiplot.R") # function from the R cookbook
 multiplot(g1, g3, g2, g4, cols = 2)
+```
+I also experimented with an *interactive* version of this plot using R shiny. The next code block exports the needed data. [Here](../interactive_shiny_plot/app.R) is the script and [here](https://dbenesh82.shinyapps.io/parasite_specificity_across_the_life_cycle/) is the plot.
+```{r, message=FALSE, warning=FALSE}
+write.table(dataH.hs, file = "../interactive_shiny_plot/data_for_shiny.csv", row.names = F, sep = ",")
 ```
 
 In my opinion, no patterns really jump out of these slopegraphs. One trend is that worm are rather generalist in the second intermediate host in three-host cycles. Perhaps the most important take away is that host specificty can change a lot over a cycle. The abundance of crossing lines (i.e. specificity can be very high in one stage and low in the next, or vice versa) could suggest there is a tradeoff across stages. To look for such a tradeoff, we need to make the long data wide.
