@@ -3,7 +3,7 @@ title: "Host specificity analyses - calculate and analyze host specificity"
 output: github_document
 ---
 
-**Background**: This script examines patterns of host specificity in complex life cycles. I use a [database](http://onlinelibrary.wiley.com/doi/10.1002/ecy.1680/suppinfo) of helminth (parasitic worm) life cycles to examine the diversity of hosts exploited by these parasites. Complex life cycle parasites infect dissimilar hosts during their life, e.g. an invertebrate as first host and a vertebrate as second host. Do complex life cycle parasites infect more hosts than simple life cycle parasites? How does specificity vary within cycles (i.e. larval vs adult stage). I use two specificity indices: host range and a specificity index that accounts for the taxonomic similarity of hosts. To calculate this second index, we need taxonomic information for each host. Taxonomic data can be downloaded from the NCBI by running the script [get_clean_host_taxonomy](../get_taxonomy/get_clean_host_taxonomy.Rmd).
+**Background**: This script examines patterns of host specificity in complex life cycles. I use a [database](http://onlinelibrary.wiley.com/doi/10.1002/ecy.1680/suppinfo) of helminth (parasitic worm) life cycles to examine the diversity of hosts exploited by these parasites. Complex life cycle parasites infect dissimilar hosts during their life, e.g. an invertebrate as first host and a vertebrate as second host. Do complex life cycle parasites infect more hosts than simple life cycle parasites? How does specificity vary within cycles (i.e. larval vs adult stage). I use two specificity indices: host range and a specificity index that accounts for the taxonomic similarity of hosts. To calculate this second index, we need taxonomic information for each host. Taxonomic data can be downloaded from the NCBI by running the script [get_clean_host_taxonomy](../get_taxonomy/get_clean_host_taxonomy.md).
 
 Start as usual by loading libraries, setting a plotting theme, and importing data
 ```{r, message=FALSE, warning=FALSE}
@@ -454,7 +454,7 @@ outfig <- ggplot(filter(growth_df, hosts > 1),
         legend.background = element_blank(),
         legend.text = element_text(size = 12),
         legend.key = element_rect(fill = NA)) +
-  labs(x = "Orders of magnitude size increase in host", y = "Host specificity index")
+  labs(x = "Orders of magnitude size increase", y = "Host specificity index")
 outfig
 
 # want to export this figure, for use in word doc
