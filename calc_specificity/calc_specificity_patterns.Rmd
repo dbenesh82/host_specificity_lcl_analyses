@@ -3,7 +3,7 @@ title: "Host specificity analyses - calculate and analyze host specificity"
 output: github_document
 ---
 
-**Background**: This script examines patterns of host specificity in complex life cycles. I use a [database](http://onlinelibrary.wiley.com/doi/10.1002/ecy.1680/suppinfo) of helminth (parasitic worm) life cycles to examine the diversity of hosts exploited by these parasites. Complex life cycle parasites infect dissimilar hosts during their life, e.g. an invertebrate as first host and a vertebrate as second host. Do complex life cycle parasites infect more hosts than simple life cycle parasites? How does specificity vary within cycles (i.e. larval vs adult stage). I use two specificity indices: host range and a specificity index that accounts for the taxonomic similarity of hosts. To calculate this second index, we need taxonomic information for each host. Taxonomic data can be downloaded from the NCBI by running the script [get_clean_host_taxonomy](../get_taxonomy/get_clean_host_taxonomy.RMD).
+**Background**: This script examines patterns of host specificity in complex life cycles. I use a [database](http://onlinelibrary.wiley.com/doi/10.1002/ecy.1680/suppinfo) of helminth (parasitic worm) life cycles to examine the diversity of hosts exploited by these parasites. Complex life cycle parasites infect dissimilar hosts during their life, e.g. an invertebrate as first host and a vertebrate as second host. Do complex life cycle parasites infect more hosts than simple life cycle parasites? How does specificity vary within cycles (i.e. larval vs adult stage). I use two specificity indices: host range and a specificity index that accounts for the taxonomic similarity of hosts. To calculate this second index, we need taxonomic information for each host. Taxonomic data can be downloaded from the NCBI by running the script [get_clean_host_taxonomy](../get_taxonomy/get_clean_host_taxonomy.Rmd).
 
 Start as usual by loading libraries, setting a plotting theme, and importing data
 ```{r, message=FALSE, warning=FALSE}
@@ -22,12 +22,11 @@ theme.o <- theme_update(axis.text = element_text(colour="black", size = 15),
                         panel.grid.major=element_line(color="gray",linetype = "dotted"),
                         panel.background= element_rect(fill = NA))
 
-
 # load host database
 dataH <- read.csv(file="../data/CLC_database_hosts.csv", header = TRUE, sep=",")
 ```
 
-**Host specificity across entire life cycle**
+### Host specificity across entire life cycle ###
 
 First, we look at the host range for a parasite, pooled across all stages (larval and adult). The host range is just the number of hosts from which a parasite has been recorded. Some parasite cycles were not complete (i.e. a host was assumed but not verified). We'll remove the parasite species where the life cycle is only partially known.
 
@@ -165,7 +164,7 @@ ggsave(filename = "../figs/hostdissimilarity_vs_lcl.svg", width = 5, height = 4.
 ```
 
 
-**Host specificity variation within life cycles**
+### Host specificity variation within life cycles ###
 
 Now we turn attention to variation within a cycle. Instead of calculating host specificity across the whole cycle (i.e. larva and adult stages pooled), we want to calculate host specificity for each life stage separately. We are interested in whether certain stage in a life cycle are more or less specific. First, we recalculate host range at the level of stage for each species.
 
@@ -318,7 +317,7 @@ g4 <- ggplot(data=filter(dataH.hs, hosts > 1, maxLCL <= 3),
   annotate('text', x = 4.5, y = 4.5, label = '>3-host cycle', color = mypalette[4], size = 5)
 ```
 
-To facilitate comparisons, we put all 4 plots together. The [multiplot](LINK!!!!) function was taken from the R graphics cookbook site.
+To facilitate comparisons, we put all 4 plots together. The [multiplot](http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/) function was taken from the R graphics cookbook site.
 
 ```{r, message=FALSE, warning=FALSE}
 source("multiplot.R") # function from the R cookbook
@@ -343,7 +342,7 @@ ggplot(filter(hs_cov, maxLCL == 2),
   labs(x = "Specificity in first int host", y = "Specificity in second def host")
 ```
 
-**Specificity vs growth tradeoff**
+### Specificity vs growth tradeoff ###
 
 We can examine another potential tradeoff related to host specificity. Namely, that generalist stages grow less. A common idea about the evolution of specificity is that a 'jack-of-all-trades is a master of none'. Some maybe generalists (jack-of-all-trades) pay for their wide host ranges with less growth. By contrast, specialists (masters) grow extensively. Let's import the parasite body size data from the life cycle database.
 
@@ -490,7 +489,6 @@ out2 <- lmer(hs ~ rel_diff + stage2 + (1 | Parasite.species),
             data = filter(growth_df, !is.na(rel_diff), hosts > 1))
 summary(out2)
 anova(out1, out2)
-
 ```
 
 The absence of a 'species effect' does not necessarily mean it is irrelevant. It may just be that at the species level there is too much variation, perhaps measurement error, to see a trend. There might be broader phylogenetic trends, where one parasite clade is consistently generalist at one stage and specific at another. In other words, we need a parasite phylogeny to better evaluate these patterns.
