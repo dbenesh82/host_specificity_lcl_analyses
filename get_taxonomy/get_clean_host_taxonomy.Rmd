@@ -35,51 +35,56 @@ g.sp.vec <- sort(na.omit(g.sp.vec))
 
 To get the taxonomies, we query the NCBI database for each host species. This code is simply to get an idea how long it takes. It's blocked out because it does not need to be run everytime.
 
-```{r}
-#QUERY NCBI DATABASE
-#s1 <- system.time(ids.for.classif<-get_uid_(h.sp.vec[1:10]))
-#s2 <- system.time(ids.for.classif<-get_uid_(h.sp.vec[1:50]))
-#s3 <- system.time(ids.for.classif<-get_uid_(h.sp.vec[1:100]))
-#s4 <- system.time(ids.for.classif<-get_uid_(h.sp.vec[1:500]))
-
-#tst <- data.frame(sp = c(10,50,100,500), time = c(s1, s2, s3, s4))
-#ct <- coef(lm(time ~ sp, data=tst))
-
-#paste("It's estimated to take", (ct[1] + ct[2] * length(h.sp.vec) ) / 60, "minutes to query all the species")
+```{r, message=FALSE, warning=FALSE}
+# QUERY NCBI DATABASE
+# s1 <- system.time(ids.for.classif<-get_uid_(h.sp.vec[1:10]))
+# s2 <- system.time(ids.for.classif<-get_uid_(h.sp.vec[1:50]))
+# s3 <- system.time(ids.for.classif<-get_uid_(h.sp.vec[1:100]))
+# s4 <- system.time(ids.for.classif<-get_uid_(h.sp.vec[1:500]))
+# 
+# tst <- data.frame(sp = c(10,50,100,500), time = c(s1['elapsed'], s2['elapsed'], s3['elapsed'], s4['elapsed']))
+# ct <- coef(lm(time ~ sp, data=tst))
+# 
+# min <- (ct[1] + ct[2] * length(h.sp.vec) ) / 60
+# 
+# print(
+#   paste("It's estimated to take", round(min, 1), "minutes to query all the species")
+# )
+# rm(s1, s2, s3, s4, tst, ct, min)
 # on my laptop, it is predicted to take about an hour
 ```
 
-For 3500+ host species, we query the NCBI database to get the uniques ids for each. It takes a while.
+For 3500+ host species, we query the NCBI database to get the uniques ids for each. It takes a while. The last time this script was run and the database was queried was `r Sys.time()`.
 
-```{r}
-ids.for.classif<-get_uid_(h.sp.vec)
+```{r, message=FALSE, warning=FALSE}
+ids.for.classif <- get_uid_(h.sp.vec)
+save.image("workspace_after_tax_downloads.RData")
 ```
 
-This returns a list for each species that includes a 'uid', the unique identifier in NCBI. We want to extract that, as well as some other data from the list. The next block loops through each species to extract ids, the string queried (species or genus name), and the taxonomic level of the query (species or genus). When host species were not found in the NCBI database, the genus name was queried. 
+This returns a list for each species that includes a 'uid', the unique identifier in NCBI. We want to extract uid, as well as some other data. The next block loops through each species to extract ids, the string queried (species or genus name), and the taxonomic level of the query (species or genus). When host species were not found in the NCBI database, the genus name was queried.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 # empty character vectors for storing data collected in loop
-ncbi.ids<-character()
-tg.vec<-character()
-q.rank<-character()
+ncbi.ids <- character() # unique ncbi id
+tg.vec <- character() # the species name queried
+q.rank <- character() # query at species or genus level
 
 # loop through each species
 for(i in seq_along(ids.for.classif)) {
   
-  tg<-h.sp.vec[i] # the species
-  gx<-substring(tg, first=1,last=regexpr(tg, pattern = " ")-1) # the genus
-  df.ncbi<-ids.for.classif[[i]] # data table from initial NCBI query
+  tg <- h.sp.vec[i] # the species
+  gx <- substring(tg, first=1,last=regexpr(tg, pattern = " ")-1) # the genus
+  df.ncbi <- ids.for.classif[[i]] # data table from initial NCBI query
   
   if(
-    sum(df.ncbi$scientificname == tg)>=1 && # is there a hit in ncbi for exact species name?
-    sum(df.ncbi$rank[which(df.ncbi$scientificname == tg)] == "species")>=1 # and are the hits at the rank of species?
+    sum(df.ncbi$scientificname == tg) >= 1 && # is there a hit in ncbi for exact species name?
+    sum(df.ncbi$rank[which(df.ncbi$scientificname == tg)] == "species") >= 1 # and are the hits at the rank of species?
     ) { 
     # if there was a hit at the rank of species, then save the id and note the query was 'species-level'
     ids <- df.ncbi$uid[which(df.ncbi$scientificname == tg)]
     q.rank <- c(q.rank, rep('species', length(ids)))
     } else {
       # if there was not a hit at the rank of species, query the genus
-      print(i)
       ids.for.classif[i] <- get_uid_(gx) # query the genus
       df.ncbi <- ids.for.classif[[i]] # replace old entry in list
       
@@ -91,7 +96,7 @@ for(i in seq_along(ids.for.classif)) {
   ncbi.ids <- c(ncbi.ids, ids)
   tg.vec <- c(tg.vec, rep(tg, length(ids)))
   
-  if(i ==1) {i.vec <- rep(i,length(ids))} else {i.vec <- c(i.vec, rep(i, length(ids)))}
+  if(i == 1) {i.vec <- rep(i,length(ids))} else {i.vec <- c(i.vec, rep(i, length(ids)))}
 }
 
 # combine into dataframe
@@ -100,109 +105,46 @@ m.df<-data.frame(i.vec, sp.query = tg.vec, q.rank, ncbi.ids)
 
 Now, we use the ids to download the classification for each species from NCBI. This also takes awhile.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 ncbi.tax<-classification(unique(ncbi.ids), db = 'ncbi')
+save.image("workspace_after_tax_downloads.RData")
 ```
 
-The returned data needs to be cleaned and organized. THIS CAN BE DONE BETTER!
+The returned data are in a list, so we transform them into a dataframe, and select only those taxonomic ranks that are named (e.g. family, order, class, etc.; not 'no rank').
 
 ```{r}
 ncbi.tax <- rbind(ncbi.tax)%>%
-  select(name, rank, query, db)
-ncbi.tax <- ncbi.tax[which(ncbi.tax$rank != "no rank"),] #remove unnecessary categories
+  select(name, rank, query)%>%
+  filter(rank != "no rank")
 ```
 
-```{r}
-# make sure combination of 'rank' and 'query' do not have duplicate rows, because it causes a problem when 'spreading' the data below
-tx<-group_by(ncbi.tax, query, rank)%>%
-  summarize(n=n())%>%
-  filter(n>1) # dataframe with the queries that return multiple names for a given rank
-
-# loop through them to pick just one name for a given rank and delete other rows from 'ncbi.tax' df
-for(i in seq_along(tx$query)){
-  qi<-tx$query[i]
-  ri<-tx$rank[i]
-  mv<-which(!is.na(match(ncbi.tax$query, qi)) & 
-              !is.na(match(ncbi.tax$rank, ri))) #matching vector for ncbi.tax
-  ncbi.tax<-ncbi.tax[-mv[which(mv != max(mv))],] #delete unnecessary duplicated rows from ncbi.tax
-}
-
-# better way to do this for sure!
-```
+Then, we re-arrange the data from a long to a wide format, and combine it with the table containing the query info.
 
 ```{r}
+# make sure combos of 'rank' and 'query' do not have duplicate rows, because it causes a problem when 'spreading' the data next
+ncbi.tax <- distinct(ncbi.tax)
+
 ncbi.tax<-spread(ncbi.tax, rank, name) #make long df wide
 
-#combine query info in m.df with output from ncbi using queries as key-value pair
-ncbi.tax.out <- cbind(m.df, ncbi.tax[match(m.df$ncbi.ids, ncbi.tax$query),])
-rownames(ncbi.tax.out)<-NULL #reset row names
+#combine query info in m.df with output from ncbi using ids as keys
+ncbi.tax.out <- left_join(m.df, ncbi.tax, by = c("ncbi.ids" = "query"))
 
-#remove identical column (ncbi.ids = query)
-ncbi.tax.out <- select(ncbi.tax.out, -ncbi.ids) 
-
-
-#remove non-animal taxonomies returned
-ncbi.tax.out <- filter(ncbi.tax.out, kingdom == "Metazoa")
+#remove non-animal taxonomies (i.e. not metazoans)
+ncbi.tax.out <- filter(ncbi.tax.out, kingdom == "Metazoa" | is.na(kingdom))
 
 #remove unneeded objects
-rm(df.ncbi, gx, i, i.vec, ids, m.df, q.rank, tg, tg.vec, tst, tx)
+rm(df.ncbi, gx, i, i.vec, ids, m.df, q.rank, tg, tg.vec)
 ```
 
-
-
-
-The downloaded taxonomies are not consistent across all hosts species. For example, when we just look at the classical taxonomic hierarchy (genus, family, order, class, phylum), we see quite a few host species are missing order or class.
+The proportion of hosts in the database for which there was a hit in the NCBI database was `r round( dim(ncbi.tax.out)[1] / length(h.sp.vec), 2)`. However, the downloaded taxonomies are not consistent across all hosts species. For example, when we just look at the classical taxonomic hierarchy (genus, family, order, class, phylum), we see quite a few host species are missing order or class.
 
 ```{r}
 sapply(select(ncbi.tax.out, genus, family, order, class, phylum), function(x) sum(is.na(x)))
 ```
 
-Instead of ignoring species with missing taxonomic information, we can try to impute it with a quick and dirty algorithm. We'll create a couple functions to help with this. The first function returns other taxonomic ranks (e.g. subgenus) that straddle the common ones (genus).
+Instead of ignoring species with missing taxonomic information, we can try to impute it with a quick and dirty algorithm. I created a couple functions to help with this. Essentially, we look to straddling taxonomic ranks to fill in missing ones (e.g. if class is missing, then is there a subclass returned by ncbi?). Sometimes multiple straddling ranks will be available, and in these cases we just return the most common one in the dataset. Essentially, when imputing taxonomic values, we are preferencing commoness. On the one hand, this may reduce the observed taxonomic diversity of hosts for a given parasite, as certain hosts are likely to share the same imputed taxonomies. On the other hand, the observed taxonomic diversity of hosts is probably higher than if species were ignored when they lacked full taxonomic hierarchies.
 
-```{r}
-#function to return the taxonomic ranks straddling a particular 'main' taxonomic rank
-get_straddling_tax_levels <- function(tax_level) {
-  if(tax_level == 'genus') {
-    return(c('subgenus', 'subtribe', 'tribe', 'subfamily'))
-  } else if(tax_level == 'family') {
-    return(c('subtribe', 'tribe', 'subfamily', 'superfamily', 'parvorder', 'infraorder', 'suborder'))
-  } else if(tax_level == 'order') {
-    return(c('superfamily', 'parvorder', 'infraorder', 'suborder', 'superorder', 'infraclass', 'subclass'))
-  } else if(tax_level == 'class') {
-    return(c('superorder', 'infraclass', 'subclass', 'superclass', 'subphylum'))
-  } else if(tax_level == 'phylum') {
-    return(c('superclass', 'subphylum', 'subkingdom'))
-  }
-}
-```
-
-The function `get_straddling_tax_levels` is a helper for the next function, which replaces missing taxonomic ranks with the value from one of the straddling ranks. Sometime multiple straddling ranks will be available, but it returns the most common one.
-
-```{r}
-# function to replace missing taxonomic rank
-fill_in_tax_level <- function(species, tax_level_missing){
-  
-  # takes in species and missing taxonomic rank, return replacement name
-  
-  row.in.ncbi <- which(ncbi.tax.out$sp.query == species) #get taxonomic data for species
-  
-  # check the taxonomic info available for possible replacements
-  tax_levels_to_use_for_replacement <- get_straddling_tax_levels(tax_level = tax_level_missing)
-  possible_replacements <- as.character(ncbi.tax.out[row.in.ncbi, tax_levels_to_use_for_replacement])
-  possible_replacements <- possible_replacements[!is.na(possible_replacements)]
-  
-  # get the counts of taxonomic names across all host data
-  counts <- as.numeric(common.tax.groups[
-    match(possible_replacements, common.tax.groups$tax.name),]$count)
-  
-  # replacement is the name with biggest count
-  replacement <- possible_replacements[which(counts == max(counts))]
-  
-  return(replacement)
-}
-```
-
-We also create a table for use in the `fill_in_tax_level` function. It records the number of times any given taxonomic name appears in data, and is used to judge which taxa is the best for filling in missing data. Essentially, when imputing taxonomic values, we are preferencing commoness. On the one hand, this may reduce the observed taxonomic diversity of hosts for a given parasite, as certain hosts are likely to share the same imputed taxonomies. On the other hand, the observed taxonomic diversity of hosts is probably higher than if species were ignored if they lacked full taxonomic hierarchies.
+We need to create a table for use in the algorithm. It records the number of times any given taxonomic name appears in the data, and is used to judge which taxa is the best for filling in missing data. 
 
 ```{r}
 common.tax.groups <- select(ncbi.tax.out, class:tribe)%>%
@@ -215,41 +157,44 @@ common.tax.groups <- select(ncbi.tax.out, class:tribe)%>%
 Then we fill in the missing data, by looping over the taxonomic ranks and the species.
 
 ```{r}
+source("impute_tax_levels.R") # load functions for imputing
+
 ncbi.tax.out2 <- ncbi.tax.out #make a copy to check how much was filled in
 
 tax.ranks <- c('genus', 'family', 'order', 'class', 'phylum')
+
 for(i in seq_along(tax.ranks)){ #the first loop goes across main taxonomic columns in ncbi.tax.out
+  
   rank <- tax.ranks[i]
   
   for(j in seq_along(ncbi.tax.out$i.vec)){ #the second loop goes through the rows of main columns
+    
     if( is.na(ncbi.tax.out[j, rank])) {
-      # if a main tax rank is missing, replace it
-      replacement_level <- fill_in_tax_level(ncbi.tax.out[j, 'sp.query'], rank)
-      #sometimes either nothing is returned (straddling tax ranks are empty) or...
       
-      #...multiple entries returned, which is due to tax ranks tying in 'commonness'
+      # if a main tax rank is missing, replace it
+      replacement_level <- fill_in_tax_level(ncbi.tax.out, ncbi.tax.out[j, 'sp.query'], rank)
       if(length(replacement_level) > 0) { 
-        ncbi.tax.out[j, rank] <- replacement_level[1] #takes lowest level tax rank
-        #MOVE THIS INTO fil_in_tax_level function!!!!
+        ncbi.tax.out[j, rank] <- replacement_level
+        # only replace if replacement available
+        # tried to make this conditional superfluous by including it in 'fill_in_tax_level' function
+        # but for some reason I couldn't figure out, it sometimes it returns empty character vectors
       }
     }
   }
 }
 ```
 
-Check how much was filled in. An improvement.
+Check how much was filled in. Quite an improvement. Thus, for species where some taxonomy was returned, then it was possible to 
 
 ```{r}
-#PROBABLY CBIND THESE TO MAKE A NICER OUT!  
-sapply(ncbi.tax.out2[, tax.ranks], function(x) sum(is.na(x))) #before
-sapply(ncbi.tax.out[, tax.ranks], function(x) sum(is.na(x))) #after
+data.frame(before = sapply(ncbi.tax.out2[, tax.ranks], function(x) sum(is.na(x))), #before
+           after = sapply(ncbi.tax.out[, tax.ranks], function(x) sum(is.na(x)))) #after
 ```
 
 Lastly, we clean up the workspace and save the taxonomy table to file.
 
 ```{r}
-rm(common.tax.groups, fill_in_tax_level, get_straddling_tax_levels, i, j,
-   ncbi.tax.out2, rank, replacement_level, tax.ranks)
+rm(common.tax.groups, i, j, ncbi.tax.out2, rank, tax.ranks)
 
 write.table(ncbi.tax.out, file = "../data/ncbi_host_taxonomy.csv", sep = ",", row.names = F) 
 ```
