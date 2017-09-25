@@ -3,7 +3,7 @@
 "Abbreviata antarctica",2,"adult",12,2.74242424242424,0.312442607897153,"adult",2
 "Abbreviata caucasica",1,"1larv",2,1,NA,"larva",2
 "Abbreviata caucasica",2,"adult",4,2.33333333333333,0.555555555555556,"adult",2
-"Abbreviata kazachstanica",1,"1larv",26,3.3,0.71,"larva",3
+"Abbreviata kazachstanica",1,"1larv",26,3.25263157894737,0.904598337950138,"larva",3
 "Abbreviata kazachstanica",2,"2larv",2,5,0,"larva",3
 "Abbreviata kazachstanica",3,"adult",1,1,NA,"adult",3
 "Abbreviata turkomanica",1,"1larv",1,NA,NA,"larva",2
@@ -47,7 +47,7 @@
 "Acuaria hamulosa",2,"adult",3,2,0,"adult",2
 "Acuaria subula",1,"1larv",1,1,NA,"larva",2
 "Acuaria subula",2,"adult",15,2.87619047619048,0.16562358276644,"adult",2
-"Aelurostrongylus abstrusus",1,"1larv",22,3.05228758169935,0.454782348669315,"larva",3
+"Aelurostrongylus abstrusus",1,"1larv",22,3.0718954248366,0.432739544619591,"larva",3
 "Aelurostrongylus abstrusus",2,"2larv",6,4.66666666666667,0.355555555555556,"larva",3
 "Aelurostrongylus abstrusus",3,"adult",1,1,NA,"adult",3
 "Aelurostrongylus falciformis",1,"1larv",7,2.86666666666667,0.248888888888889,"larva",2
@@ -94,7 +94,7 @@
 "Anguillicola crassus",2,"2larv",19,3.37908496732026,0.862830535264215,"larva",3
 "Anguillicola crassus",3,"adult",2,1,0,"adult",3
 "Anisakis pegreffii",1,"1larv",1,1,NA,"larva",4
-"Anisakis pegreffii",2,"2larv",104,4.04987626118409,0.461628101955029,"larva",4
+"Anisakis pegreffii",2,"2larv",104,4.05101846563868,0.46037065509401,"larva",4
 "Anisakis pegreffii",3,"3larv",27,3.86039886039886,0.245468786779328,"larva",4
 "Anisakis pegreffii",4,"adult",5,2.4,0.24,"adult",4
 "Anisakis simplex",1,"1larv",9,2.88888888888889,2.15432098765432,"larva",4
@@ -107,7 +107,7 @@
 "Anomotaenia clavigera",2,"adult",4,2.33333333333333,0.555555555555556,"adult",2
 "Anomotaenia constricta",1,"1larv",1,1,NA,"larva",2
 "Anomotaenia constricta",2,"adult",10,2.42222222222222,0.688395061728395,"adult",2
-"Anomotaenia pyriformis",1,"1larv",3,3.33333333333333,0.888888888888889,"larva",2
+"Anomotaenia pyriformis",1,"1larv",4,NA,NA,"larva",2
 "Anomotaenia pyriformis",2,"adult",2,2,0,"adult",2
 "Anomotaenia tringae",1,"1larv",2,1,0,"larva",2
 "Anomotaenia tringae",2,"adult",2,1,0,"adult",2
@@ -120,9 +120,9 @@
 "Anoplotaenia dasyuri",1,"1larv",3,2.66666666666667,0.222222222222222,"larva",2
 "Anoplotaenia dasyuri",2,"adult",4,3.5,0.583333333333333,"adult",2
 "Aonchotheca bovis",1,"adult",6,2.6,0.24,"adult",1
-"Aonchotheca bursata",1,"1larv",6,1.93333333333333,0.0622222222222222,"larva",2
+"Aonchotheca bursata",1,"1larv",7,NA,NA,"larva",2
 "Aonchotheca bursata",2,"adult",3,2,0,"adult",2
-"Aonchotheca caudinflata",1,"1larv",8,1.92857142857143,0.0663265306122449,"larva",2
+"Aonchotheca caudinflata",1,"1larv",9,NA,NA,"larva",2
 "Aonchotheca caudinflata",2,"adult",1,1,NA,"adult",2
 "Aonchotheca erinacei",1,"1larv",2,2,0,"larva",2
 "Aonchotheca erinacei",2,"adult",1,1,NA,"adult",2
@@ -131,7 +131,7 @@
 "Aplectana courdurieri",1,"adult",1,1,NA,"adult",2
 "Aplectana courdurieri",2,"adult",1,1,NA,"adult",2
 "Aplectana macintoshii",1,"adult",21,3.14761904761905,0.98297052154195,"adult",1
-"Aploparaksis australis",1,"1larv",7,2.42857142857143,0.340136054421769,"larva",2
+"Aploparaksis australis",1,"1larv",8,NA,NA,"larva",2
 "Aploparaksis australis",2,"adult",5,1.7,0.21,"adult",2
 "Aploparaksis birulai",1,"1larv",1,1,NA,"larva",2
 "Aploparaksis birulai",2,"adult",3,2,0,"adult",2
@@ -139,7 +139,7 @@
 "Aploparaksis brachyphallos",2,"adult",10,2.62222222222222,0.279506172839506,"adult",2
 "Aploparaksis crassirostris",1,"1larv",2,4,0,"larva",2
 "Aploparaksis crassirostris",2,"adult",5,2.3,0.41,"adult",2
-"Aploparaksis demshini",1,"1larv",4,2.33333333333333,0.555555555555556,"larva",2
+"Aploparaksis demshini",1,"1larv",5,NA,NA,"larva",2
 "Aploparaksis demshini",2,"adult",1,1,NA,"adult",2
 "Aploparaksis filum",1,"1larv",2,1,NA,"larva",2
 "Aploparaksis filum",2,"adult",5,1.4,0.24,"adult",2
@@ -155,7 +155,7 @@
 "Aploparaksis pseudofilum",2,"adult",4,1.5,0.25,"adult",2
 "Aploparaksis rissae",1,"1larv",4,3.5,0.583333333333333,"larva",2
 "Aploparaksis rissae",2,"adult",4,2.33333333333333,0.555555555555556,"adult",2
-"Aploparaksis sinensis",1,"1larv",5,2,0,"larva",2
+"Aploparaksis sinensis",1,"1larv",6,NA,NA,"larva",2
 "Aploparaksis sinensis",2,"adult",1,1,NA,"adult",2
 "Aporhynchus norvegicus",1,"1larv",1,1,NA,"larva",3
 "Aporhynchus norvegicus",2,"2larv",1,1,NA,"larva",3
@@ -416,7 +416,7 @@
 "Cyathocephalus truncatus",2,"adult",8,2.42857142857143,0.887755102040816,"adult",2
 "Cyathostoma bronchialis",1,"1larv",10,1.53333333333333,0.248888888888889,"larva",2
 "Cyathostoma bronchialis",2,"adult",3,2,0,"adult",2
-"Cyathostoma lari",1,"1larv",4,4,4,"larva",2
+"Cyathostoma lari",1,"1larv",5,NA,NA,"larva",2
 "Cyathostoma lari",2,"adult",11,3.47272727272727,0.867438016528926,"adult",2
 "Cyathostomum catinatum",1,"adult",5,1,0,"adult",1
 "Cyclodontostomum purvisi",1,"adult",8,2,0,"adult",1
@@ -438,7 +438,7 @@
 "Cystidicoloides tenuissima",1,"1larv",7,2.53333333333333,0.382222222222222,"larva",3
 "Cystidicoloides tenuissima",2,"2larv",2,1,NA,"larva",3
 "Cystidicoloides tenuissima",3,"adult",4,1.83333333333333,0.138888888888889,"adult",3
-"Cystocaulus ocreatus",1,"1larv",26,2.70333333333333,0.315322222222222,"larva",2
+"Cystocaulus ocreatus",1,"1larv",26,2.72666666666667,0.305288888888889,"larva",2
 "Cystocaulus ocreatus",2,"adult",2,2,0,"adult",2
 "Cystoopsis acipenseri",1,"1larv",3,1.66666666666667,0.222222222222222,"larva",2
 "Cystoopsis acipenseri",2,"adult",2,1,0,"adult",2
@@ -474,7 +474,7 @@
 "Dioctophyma renale",3,"adult",10,2.88888888888889,0.587654320987654,"adult",3
 "Dioecotaenia cancellata",1,"1larv",3,4.66666666666667,0.222222222222222,"larva",2
 "Dioecotaenia cancellata",2,"adult",1,1,NA,"adult",2
-"Diorchis asiatica",1,"1larv",4,2.66666666666667,0.555555555555556,"larva",2
+"Diorchis asiatica",1,"1larv",4,2.33333333333333,0.555555555555556,"larva",2
 "Diorchis asiatica",2,"adult",4,1,0,"adult",2
 "Diorchis brevis",1,"1larv",1,1,NA,"larva",2
 "Diorchis brevis",2,"adult",1,1,NA,"adult",2
@@ -490,7 +490,7 @@
 "Diorchis nyrocae",3,"adult",7,1.57142857142857,0.244897959183673,"adult",3
 "Diorchis parvogenitalis",1,"1larv",1,1,NA,"larva",2
 "Diorchis parvogenitalis",2,"adult",5,1.6,0.24,"adult",2
-"Diorchis ransomi",1,"1larv",8,3.75,2.04464285714286,"larva",3
+"Diorchis ransomi",1,"1larv",8,3.82142857142857,1.8609693877551,"larva",3
 "Diorchis ransomi",2,"2larv",3,3,2,"larva",3
 "Diorchis ransomi",3,"adult",4,2.5,2.25,"adult",3
 "Diphyllobothrium dendriticum",1,"1larv",8,2.71428571428571,2.20408163265306,"larva",4
@@ -530,7 +530,7 @@
 "Dispharynx nasuta",1,"1larv",4,2.83333333333333,0.138888888888889,"larva",2
 "Dispharynx nasuta",2,"adult",4,3.33333333333333,0.555555555555556,"adult",2
 "Dollfusentis chandleri",1,"1larv",3,2,0,"larva",2
-"Dollfusentis chandleri",2,"adult",9,3.69444444444444,0.878858024691358,"adult",2
+"Dollfusentis chandleri",2,"adult",9,4,0.666666666666667,"adult",2
 "Dracunculus insignis",1,"1larv",2,2,0,"larva",3
 "Dracunculus insignis",2,"2larv",3,3,0,"larva",3
 "Dracunculus insignis",3,"adult",6,3.33333333333333,0.888888888888889,"adult",3
@@ -618,9 +618,9 @@
 "Echinuria uncinata",2,"adult",7,1.85714285714286,0.122448979591837,"adult",2
 "Elaphostrongylus alces",1,"1larv",2,3,0,"larva",2
 "Elaphostrongylus alces",2,"adult",2,2,0,"adult",2
-"Elaphostrongylus cervi",1,"1larv",18,2.84615384615385,0.284023668639053,"larva",2
+"Elaphostrongylus cervi",1,"1larv",18,2.83333333333333,0.272222222222222,"larva",2
 "Elaphostrongylus cervi",2,"adult",3,1.66666666666667,0.222222222222222,"adult",2
-"Elaphostrongylus rangiferi",1,"1larv",4,3,0,"larva",2
+"Elaphostrongylus rangiferi",1,"1larv",4,NA,NA,"larva",2
 "Elaphostrongylus rangiferi",2,"adult",2,2,0,"adult",2
 "Enterobius vermicularis",1,"adult",1,1,NA,"adult",1
 "Epomidiostomum uncinatum",1,"adult",6,2,2,"adult",1
@@ -637,9 +637,9 @@
 "Eubothrium salvelini",3,"adult",9,1.86111111111111,0.119598765432099,"adult",3
 "Eucoleus aerophilus",1,"1larv",4,1.66666666666667,0.222222222222222,"larva",2
 "Eucoleus aerophilus",2,"adult",6,2.66666666666667,0.355555555555556,"adult",2
-"Eucoleus annulatus",1,"1larv",3,2,0,"larva",2
+"Eucoleus annulatus",1,"1larv",4,NA,NA,"larva",2
 "Eucoleus annulatus",2,"adult",4,2,0,"adult",2
-"Eucoleus contortus",1,"1larv",1,1,NA,"larva",2
+"Eucoleus contortus",1,"1larv",2,NA,NA,"larva",2
 "Eucoleus contortus",2,"adult",13,3.29487179487179,0.951512163050625,"adult",2
 "Eucoleus frugilegi",1,"1larv",2,2,0,"larva",2
 "Eucoleus frugilegi",2,"adult",2,1,0,"adult",2
@@ -773,7 +773,7 @@
 "Hartertia obesa",2,"adult",1,1,NA,"adult",2
 "Hassalstrongylus musculi",1,"adult",1,1,NA,"adult",1
 "Hedruris androphora",1,"1larv",1,1,NA,"larva",2
-"Hedruris androphora",2,"adult",6,3.33333333333333,0.622222222222222,"adult",2
+"Hedruris androphora",2,"adult",7,4,1.71428571428571,"adult",2
 "Hedruris ijimai",1,"1larv",1,1,NA,"larva",2
 "Hedruris ijimai",2,"adult",5,1.6,0.24,"adult",2
 "Hedruris spinigera",1,"1larv",1,1,NA,"larva",2
@@ -785,9 +785,9 @@
 "Heligmosomoides polygyrus",1,"adult",4,2.33333333333333,0.555555555555556,"adult",1
 "Heligmosomum mixtum",1,"adult",3,1.66666666666667,0.222222222222222,"adult",1
 "Hepatojarakus malayae",1,"adult",2,1,0,"adult",1
-"Heterakis gallinarum",1,"1larv",3,2,0,"larva",2
+"Heterakis gallinarum",1,"1larv",4,NA,NA,"larva",2
 "Heterakis gallinarum",2,"adult",5,3.1,0.69,"adult",2
-"Heterakis spumosa",1,"1larv",2,3,0,"larva",2
+"Heterakis spumosa",1,"1larv",3,NA,NA,"larva",2
 "Heterakis spumosa",2,"adult",3,1.66666666666667,0.222222222222222,"adult",2
 "Hexaglandula corynosoma",1,"1larv",2,1,0,"larva",2
 "Hexaglandula corynosoma",2,"adult",1,1,NA,"adult",2
@@ -826,7 +826,7 @@
 "Hymenolepis vistulae",2,"adult",1,1,NA,"adult",2
 "Hyostrongylus rubidus",1,"adult",2,4,0,"adult",1
 "Hysterothylacium aduncum",1,"1larv",28,4.17,0.9211,"larva",3
-"Hysterothylacium aduncum",2,"2larv",23,NA,NA,"larva",3
+"Hysterothylacium aduncum",2,"2larv",23,5.24110671936759,1.25807308347264,"larva",3
 "Hysterothylacium aduncum",3,"adult",15,3.6,0.563809523809524,"adult",3
 "Hysterothylacium analarum",1,"1larv",1,1,NA,"larva",3
 "Hysterothylacium analarum",2,"adult",2,2,0,"adult",3
@@ -919,7 +919,7 @@
 "Mediorhynchus centurorum",1,"1larv",1,1,NA,"larva",2
 "Mediorhynchus centurorum",2,"adult",1,1,NA,"adult",2
 "Mediorhynchus grandis",1,"1larv",4,2,0,"larva",2
-"Mediorhynchus grandis",2,"adult",4,2.83333333333333,0.138888888888889,"adult",2
+"Mediorhynchus grandis",2,"adult",4,2.5,0.25,"adult",2
 "Megalobatrachonema terdentatum",1,"1larv",3,6,0,"larva",2
 "Megalobatrachonema terdentatum",2,"adult",2,2,0,"adult",2
 "Megathylacoides giganteum",1,"1larv",2,1,0,"larva",3
@@ -928,7 +928,7 @@
 "Mesidionema praecomasculatis",1,"adult",1,1,NA,"adult",1
 "Metacanthocephalus johnstoni",1,"1larv",1,NA,NA,"larva",2
 "Metacanthocephalus johnstoni",2,"adult",5,1.66666666666667,0.222222222222222,"adult",2
-"Metastrongylus apri",1,"1larv",11,2.58333333333333,0.409722222222222,"larva",2
+"Metastrongylus apri",1,"1larv",12,NA,NA,"larva",2
 "Metastrongylus apri",2,"adult",7,3.38095238095238,0.521541950113379,"adult",2
 "Metastrongylus pudendotectus",1,"1larv",4,1.66666666666667,0.222222222222222,"larva",2
 "Metastrongylus pudendotectus",2,"adult",1,1,NA,"adult",2
@@ -1005,7 +1005,7 @@
 "Monoecocestus sp.",2,"adult",1,1,NA,"adult",2
 "Mosgovoyia pectinata",1,"1larv",2,3,0,"larva",2
 "Mosgovoyia pectinata",2,"adult",11,1.32727272727273,0.256528925619835,"adult",2
-"Muellerius capillaris",1,"1larv",37,3.0367816091954,0.522785044259479,"larva",2
+"Muellerius capillaris",1,"1larv",37,NA,NA,"larva",2
 "Muellerius capillaris",2,"adult",3,2,0,"adult",2
 "Muspicea borreli",1,"adult",1,1,NA,"adult",1
 "Nematodiroides zembrae",1,"adult",1,1,NA,"adult",1
@@ -1014,7 +1014,7 @@
 "Nematodirus filicollis",1,"adult",2,2,0,"adult",1
 "Nematodirus helvetianus",1,"adult",1,1,NA,"adult",1
 "Nematodirus spathiger",1,"adult",4,3.33333333333333,0.555555555555556,"adult",1
-"Nematoparataenia southwelli",1,"1larv",2,3,0,"larva",2
+"Nematoparataenia southwelli",1,"1larv",2,2,0,"larva",2
 "Nematoparataenia southwelli",2,"adult",1,1,NA,"adult",2
 "Neocamallanus ophiocephali",1,"1larv",2,2,0,"larva",2
 "Neocamallanus ophiocephali",2,"adult",3,4,0,"adult",2
@@ -1022,7 +1022,7 @@
 "Neoctenotaenia ctenoides",2,"adult",3,1.66666666666667,0.222222222222222,"adult",2
 "Neoechinorhynchus cristatus",1,"1larv",1,1,NA,"larva",2
 "Neoechinorhynchus cristatus",2,"adult",3,1,0,"adult",2
-"Neoechinorhynchus cylindratus",1,"1larv",2,3,0,"larva",4
+"Neoechinorhynchus cylindratus",1,"1larv",2,2,0,"larva",4
 "Neoechinorhynchus cylindratus",2,"2larv",3,1,0,"larva",4
 "Neoechinorhynchus cylindratus",3,"adult",5,2.6,1.44,"adult",4
 "Neoechinorhynchus cylindratus",4,"adult",1,1,NA,"adult",4
@@ -1040,7 +1040,7 @@
 "Neogryporhynchus cheilancristrotus",3,"adult",5,1.7,0.21,"adult",3
 "Neoskrjabinolepis schaldybini",1,"1larv",2,1,NA,"larva",2
 "Neoskrjabinolepis schaldybini",2,"adult",3,1,0,"adult",2
-"Neostrongylus linearis",1,"1larv",14,2.67032967032967,0.638570220987803,"larva",2
+"Neostrongylus linearis",1,"1larv",14,2.8021978021978,0.576258905929236,"larva",2
 "Neostrongylus linearis",2,"adult",2,2,0,"adult",2
 "Nesolecithus africanus",1,"1larv",1,1,NA,"larva",2
 "Nesolecithus africanus",2,"adult",1,1,NA,"adult",2
@@ -1242,7 +1242,7 @@
 "Physocephalus sexalatus",3,"adult",4,3.5,0.25,"adult",3
 "Placoconus lotoris",1,"adult",2,3,0,"adult",1
 "Plagiorhynchus cylindraceus",1,"1larv",5,2.6,0.64,"larva",2
-"Plagiorhynchus cylindraceus",2,"adult",8,2.82142857142857,0.218112244897959,"adult",2
+"Plagiorhynchus cylindraceus",2,"adult",8,2.78571428571429,0.239795918367347,"adult",2
 "Platyscolex ciliata",1,"1larv",2,2,0,"larva",2
 "Platyscolex ciliata",2,"adult",7,1.6,0.24,"adult",2
 "Pneumostrongylus calcaratus",1,"1larv",1,1,NA,"larva",2
@@ -1273,11 +1273,11 @@
 "Porrocaecum angusticolle",1,"1larv",1,NA,NA,"larva",3
 "Porrocaecum angusticolle",2,"2larv",3,2.66666666666667,0.222222222222222,"larva",3
 "Porrocaecum angusticolle",3,"adult",7,1.95238095238095,0.0453514739229025,"adult",3
-"Porrocaecum crassum",1,"1larv",14,2,0.307692307692308,"larva",2
+"Porrocaecum crassum",1,"1larv",16,NA,NA,"larva",2
 "Porrocaecum crassum",2,"adult",3,1.66666666666667,0.222222222222222,"adult",2
 "Porrocaecum ensicaudatum",1,"1larv",6,2.2,0.426666666666667,"larva",2
-"Porrocaecum ensicaudatum",2,"adult",9,3.13888888888889,0.341820987654321,"adult",2
-"Porrocaecum semiteres",1,"1larv",3,2,0,"larva",2
+"Porrocaecum ensicaudatum",2,"adult",9,3.08333333333333,0.409722222222222,"adult",2
+"Porrocaecum semiteres",1,"1larv",4,NA,NA,"larva",2
 "Porrocaecum semiteres",2,"adult",4,3.33333333333333,0.555555555555556,"adult",2
 "Procamallanus fukiensis",1,"1larv",3,2,0,"larva",2
 "Procamallanus fukiensis",2,"adult",1,1,NA,"adult",2
@@ -1349,7 +1349,7 @@
 "Proteocephalus torulosus",2,"2larv",1,1,NA,"larva",3
 "Proteocephalus torulosus",3,"adult",7,1.9047619047619,0.0861678004535147,"adult",3
 "Protospirura muricola",1,"1larv",5,3.66666666666667,0.222222222222222,"larva",2
-"Protospirura muricola",2,"adult",38,2.95045045045045,0.722770067364662,"adult",2
+"Protospirura muricola",2,"adult",38,2.93172119487909,0.723645259394305,"adult",2
 "Protospirura numidica",1,"1larv",8,3.57142857142857,0.744897959183674,"larva",2
 "Protospirura numidica",2,"adult",14,2.72527472527473,0.814635913537012,"adult",2
 "Protostrongylus boughtoni",1,"1larv",5,2.8,0.36,"larva",2
@@ -1360,11 +1360,11 @@
 "Protostrongylus davtiani",2,"adult",4,1.5,0.25,"adult",2
 "Protostrongylus hobmaieri",1,"1larv",11,2.63636363636364,0.59504132231405,"larva",2
 "Protostrongylus hobmaieri",2,"adult",5,1.8,0.16,"adult",2
-"Protostrongylus oryctolagi",1,"1larv",3,2,0,"larva",2
+"Protostrongylus oryctolagi",1,"1larv",3,2.66666666666667,0.222222222222222,"larva",2
 "Protostrongylus oryctolagi",2,"adult",2,2,0,"adult",2
 "Protostrongylus pulmonalis/kamenskyi",1,"1larv",5,3,0,"larva",2
 "Protostrongylus pulmonalis/kamenskyi",2,"adult",2,1,0,"adult",2
-"Protostrongylus rufescens",1,"1larv",11,2.75555555555556,0.362469135802469,"larva",2
+"Protostrongylus rufescens",1,"1larv",11,2.83636363636364,0.282314049586777,"larva",2
 "Protostrongylus rufescens",2,"adult",2,2,0,"adult",2
 "Protostrongylus skrjabini",1,"1larv",2,1,NA,"larva",2
 "Protostrongylus skrjabini",2,"adult",3,1.66666666666667,0.222222222222222,"adult",2
@@ -1396,7 +1396,7 @@
 "Pterygodermatites affinis",1,"1larv",2,1,NA,"larva",3
 "Pterygodermatites affinis",2,"2larv",2,5,0,"larva",3
 "Pterygodermatites affinis",3,"adult",6,2.4,0.64,"adult",3
-"Pterygodermatites coloradensis",1,"1larv",13,3.45454545454545,0.720661157024793,"larva",2
+"Pterygodermatites coloradensis",1,"1larv",13,3.48484848484848,0.704315886134068,"larva",2
 "Pterygodermatites coloradensis",2,"adult",4,2.33333333333333,0.888888888888889,"adult",2
 "Pterygodermatites desportesi",1,"1larv",2,1,NA,"larva",2
 "Pterygodermatites desportesi",2,"adult",1,1,NA,"adult",2
@@ -1536,7 +1536,7 @@
 "Skrjabinoptera phrynosoma",2,"adult",3,1,0,"adult",2
 "Sobolevicanthus bisaccata",1,"1larv",1,1,NA,"larva",2
 "Sobolevicanthus bisaccata",2,"adult",1,1,NA,"adult",2
-"Sobolevicanthus gracilis",1,"1larv",15,3.86666666666667,1.71555555555556,"larva",3
+"Sobolevicanthus gracilis",1,"1larv",15,3.9047619047619,1.60997732426304,"larva",3
 "Sobolevicanthus gracilis",2,"2larv",5,3.1,1.89,"larva",3
 "Sobolevicanthus gracilis",3,"adult",10,1.5,0.25,"adult",3
 "Sobolevicanthus krabbeella",1,"1larv",2,2,0,"larva",2
@@ -1548,7 +1548,7 @@
 "Soboliphyme baturini",2,"2larv",9,1.66666666666667,1.55555555555556,"larva",3
 "Soboliphyme baturini",3,"adult",7,2.38095238095238,0.521541950113379,"adult",3
 "Southwellina hispida",1,"1larv",1,1,NA,"larva",3
-"Southwellina hispida",2,"2larv",7,3.71428571428571,0.585034013605442,"larva",3
+"Southwellina hispida",2,"2larv",7,3.76190476190476,0.562358276643991,"larva",3
 "Southwellina hispida",3,"adult",17,2.50735294117647,0.382298875432526,"adult",3
 "Spathebothrium simplex",1,"1larv",2,3,0,"larva",2
 "Spathebothrium simplex",2,"adult",1,1,NA,"adult",2
@@ -1607,7 +1607,7 @@
 "Staphylocystis pistillum",2,"adult",1,1,NA,"adult",2
 "Staphylocystis scalaris",1,"1larv",1,1,NA,"larva",2
 "Staphylocystis scalaris",2,"adult",3,1.66666666666667,0.222222222222222,"adult",2
-"Stephanurus dentatus",1,"1larv",3,3,0,"larva",2
+"Stephanurus dentatus",1,"1larv",4,NA,NA,"larva",2
 "Stephanurus dentatus",2,"adult",3,3.66666666666667,0.222222222222222,"adult",2
 "Sterliadochona ephemeridarum",1,"1larv",1,1,NA,"larva",2
 "Sterliadochona ephemeridarum",2,"adult",1,1,NA,"adult",2
@@ -1618,7 +1618,7 @@
 "Streptocara crassicauda",3,"adult",16,2.575,1.494375,"adult",3
 "Streptopharagus greenbergi",1,"1larv",2,2,0,"larva",2
 "Streptopharagus greenbergi",2,"adult",3,1.66666666666667,0.222222222222222,"adult",2
-"Streptopharagus kutassi",1,"1larv",10,1.93333333333333,0.0622222222222222,"larva",2
+"Streptopharagus kutassi",1,"1larv",10,1.95238095238095,0.0453514739229025,"larva",2
 "Streptopharagus kutassi",2,"adult",4,2.33333333333333,0.555555555555556,"adult",2
 "Streptopharagus pigmentatus",1,"1larv",3,2.33333333333333,0.888888888888889,"larva",2
 "Streptopharagus pigmentatus",2,"adult",2,1,0,"adult",2
@@ -1638,7 +1638,7 @@
 "Syncuaria squamata",1,"1larv",3,2.66666666666667,0.222222222222222,"larva",3
 "Syncuaria squamata",2,"2larv",6,3.4,0.64,"larva",3
 "Syncuaria squamata",3,"adult",3,1,0,"adult",3
-"Syngamus trachea",1,"1larv",14,5.29487179487179,1.31048652202498,"larva",2
+"Syngamus trachea",1,"1larv",15,NA,NA,"larva",2
 "Syngamus trachea",2,"adult",12,3.53030303030303,0.582415059687787,"adult",2
 "Syphacia muris",1,"adult",1,1,NA,"adult",1
 "Syphacia obvelata",1,"adult",1,1,NA,"adult",1
@@ -1715,7 +1715,7 @@
 "Tanaorhamphus longirostris",1,"1larv",1,1,NA,"larva",2
 "Tanaorhamphus longirostris",2,"adult",1,1,NA,"adult",2
 "Tarsubulura perarmata",1,"1larv",2,2,0,"larva",2
-"Tarsubulura perarmata",2,"adult",4,3,2,"adult",2
+"Tarsubulura perarmata",2,"adult",4,3.16666666666667,1.47222222222222,"adult",2
 "Tatria biremis",1,"1larv",1,1,NA,"larva",2
 "Tatria biremis",2,"adult",4,1.5,0.25,"adult",2
 "Tegorhynchus furcatus",1,"1larv",2,1,NA,"larva",2
@@ -1742,9 +1742,9 @@
 "Thysaniezia giardi",2,"adult",3,2,0,"adult",2
 "Toxascaris leonina",1,"1larv",4,4.33333333333333,0.555555555555556,"larva",2
 "Toxascaris leonina",2,"adult",9,2.47222222222222,0.415895061728395,"adult",2
-"Toxocara canis",1,"1larv",6,4.66666666666667,2.08888888888889,"larva",2
+"Toxocara canis",1,"1larv",7,NA,NA,"larva",2
 "Toxocara canis",2,"adult",6,2.46666666666667,0.515555555555556,"adult",2
-"Toxocara cati",1,"1larv",5,5,2,"larva",2
+"Toxocara cati",1,"1larv",6,NA,NA,"larva",2
 "Toxocara cati",2,"adult",1,1,NA,"adult",2
 "Toxocara mackerrasae",1,"adult",4,1.83333333333333,0.138888888888889,"adult",1
 "Toxocara pteropodis",1,"adult",2,1,0,"adult",1
@@ -1790,7 +1790,7 @@
 "Triodontolepis sumavensis",1,"1larv",1,1,NA,"larva",2
 "Triodontolepis sumavensis",2,"adult",1,1,NA,"adult",2
 "Triodontophorus tenuicollis",1,"adult",5,1,0,"adult",1
-"Troglostrongylus brevior",1,"1larv",8,2.82142857142857,0.218112244897959,"larva",3
+"Troglostrongylus brevior",1,"1larv",8,2.89285714285714,0.167091836734694,"larva",3
 "Troglostrongylus brevior",2,"2larv",1,1,NA,"larva",3
 "Troglostrongylus brevior",3,"adult",3,1,0,"adult",3
 "Truttaedacnitis pybusae",1,"adult",1,1,NA,"adult",1
@@ -1818,10 +1818,10 @@
 "Varestrongylus eleguneniensis",2,"adult",3,2.66666666666667,0.222222222222222,"adult",2
 "Varestrongylus pneumonicus",1,"1larv",16,2.74545454545455,0.444297520661157,"larva",2
 "Varestrongylus pneumonicus",2,"adult",4,1.66666666666667,0.222222222222222,"adult",2
-"Varestrongylus sagittatus",1,"1larv",17,3.14545454545455,0.560661157024793,"larva",2
+"Varestrongylus sagittatus",1,"1larv",17,NA,NA,"larva",2
 "Varestrongylus sagittatus",2,"adult",2,2,0,"adult",2
-"Variolepis farciminosa",1,"1larv",5,2,0,"larva",2
-"Variolepis farciminosa",2,"adult",10,2.83333333333333,0.194444444444444,"adult",2
+"Variolepis farciminosa",1,"1larv",6,NA,NA,"larva",2
+"Variolepis farciminosa",2,"adult",10,2.80555555555556,0.212191358024691,"adult",2
 "Vaucherilepis trichophorus",1,"1larv",1,1,NA,"larva",2
 "Vaucherilepis trichophorus",2,"adult",1,1,NA,"adult",2
 "Vigisolepis spinulosa",1,"1larv",1,1,NA,"larva",2

@@ -259,7 +259,6 @@ ggplot(data=filter(dataH.hs, hosts > 1),
   scale_y_continuous(limits = c(1,5), breaks = c(1:5), labels = tax.ranks)
 ```
 
-
 Make a plot for each life cycle length separately, in which the group-of-interest is highlighted and overlaid on the remaining species.
 
 ```{r, message=FALSE, warning=FALSE}
@@ -323,6 +322,7 @@ To facilitate comparisons, we put all 4 plots together. The [multiplot](http://w
 source("multiplot.R") # function from the R cookbook
 multiplot(g1, g3, g2, g4, cols = 2)
 ```
+
 I also experimented with an *interactive* version of this plot using R shiny. The next code block exports the needed data. [Here](../interactive_shiny_plot/app.R) is the script and [here](https://dbenesh82.shinyapps.io/parasite_specificity_across_the_life_cycle/) is the plot.
 ```{r, message=FALSE, warning=FALSE}
 write.table(dataH.hs, file = "../interactive_shiny_plot/data_for_shiny.csv", row.names = F, sep = ",")
