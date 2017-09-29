@@ -458,7 +458,7 @@ outfig <- ggplot(filter(growth_df, hosts > 1),
 outfig
 
 # want to export this figure, for use in word doc
-ggsave(filename = "../figs/hostdissimilarity_vs_growth.png", width = 5, height = 4.5, units = "in")
+ggsave(filename = "../figs/hostdissimilarity_vs_growth.png", width = 5.5, height = 5, units = "in")
 ```
 
 It is noisy, but negative. More growth at a given stage is associated with being more host specific at that stage. And this does not seem to differ between adult and larval stages. A simple linear regression is also significant.
