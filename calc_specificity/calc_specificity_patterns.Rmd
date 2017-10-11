@@ -104,7 +104,7 @@ phy.hs <- select(dataH, Parasite.species, Host.no, Stage, Host.species, # retain
   filter(!is.na(family) | !is.na(order) | !is.na(class) | !is.na(phylum))
 ```
 
-Let's calculate the host specificity index proposed by [Poulin and Mouillot 2003](LINK!!!) that accounts for the taxonomic similarity of hosts. We load a couple functions from an external file for calculating this index.
+Let's calculate the host specificity index proposed by [Poulin and Mouillot 2003](https://doi.org/10.1017/S0031182003002993) that accounts for the taxonomic similarity of hosts. We load a couple functions from an external file for calculating this index.
 
 ```{r, message=FALSE, warning=FALSE}
 source("host_specificity_index_calculation_functions.R")
@@ -328,7 +328,7 @@ I also experimented with an *interactive* version of this plot using R shiny. Th
 write.table(dataH.hs, file = "../interactive_shiny_plot/data_for_shiny.csv", row.names = F, sep = ",")
 ```
 
-In my opinion, no patterns really jump out of these slopegraphs. One trend is that worm are rather generalist in the second intermediate host in three-host cycles. Perhaps the most important take away is that host specificty can change a lot over a cycle. The abundance of crossing lines (i.e. specificity can be very high in one stage and low in the next, or vice versa) could suggest there is a tradeoff across stages. To look for such a tradeoff, we need to make the long data wide.
+One trend is that worms are rather generalist in the second intermediate host in three-host cycles, but in my opinion, no patterns really jump out of these slopegraphs. Perhaps the most important take away is that host specificty can change a lot over a cycle. The abundance of crossing lines (i.e. specificity can be very high in one stage and low in the next, or vice versa) could suggest there is a tradeoff across stages. To look for such a tradeoff, we need to 'spread' the data, i.e. make long data wide.
 
 ```{r, message=FALSE, warning=FALSE}
 hs_cov <- select(dataH.hs, Parasite.species, Host.no, maxLCL, hs)%>%
@@ -348,7 +348,7 @@ ggplot(filter(hs_cov, maxLCL == 2),
 
 ### Specificity vs growth tradeoff ###
 
-We can examine another potential tradeoff related to host specificity. Namely, that generalist stages grow less. A common idea about the evolution of specificity is that a 'jack-of-all-trades is a master of none'. Some maybe generalists (jack-of-all-trades) pay for their wide host ranges with less growth. By contrast, specialists (masters) grow extensively. Let's import the parasite body size data from the life cycle database.
+We can examine another potential tradeoff related to host specificity. Namely, that generalist stages grow less. A common idea about the evolution of specificity is that a 'jack-of-all-trades is a master of none'. That is, generalists (jacks) pay for their wide host ranges with less growth, while specialists (masters) grow extensively. Let's import the parasite body size data from the life cycle database.
 
 ```{r, message=FALSE, warning=FALSE}
 dataL <- read.csv(file="../data/CLC_database_lifehistory.csv", header = TRUE, sep=",")
@@ -495,4 +495,4 @@ summary(out2)
 anova(out1, out2)
 ```
 
-The absence of a 'species effect' does not necessarily mean it is irrelevant. It may just be that at the species level there is too much variation, perhaps measurement error, to see a trend. There might be broader phylogenetic trends, where one parasite clade is consistently generalist at one stage and specific at another. In other words, we need a parasite phylogeny to better evaluate these patterns.
+The absence of a 'species effect' does not necessarily mean it is irrelevant. It may just be that at the species level there is too much variation to see a trend, perhaps due to measurement error. There might be broader phylogenetic trends, where one parasite clade is consistently generalist at one stage and specific at another. In other words, we need a parasite phylogeny to more fully evaluate these patterns.
