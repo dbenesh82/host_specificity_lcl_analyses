@@ -20,7 +20,7 @@ tax.ranks <- c('genus', 'family', 'order', 'class', 'phylum') # for axis label
 
 
 
-# Define UI for application that draws a histogram
+# define UI for slopegraph application
 ui <- fluidPage(
    
    # Application title
