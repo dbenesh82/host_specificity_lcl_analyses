@@ -1,0 +1,1 @@
+Two data files compose the helminth life cycle database (CLC_database_hosts.csv and CLC_database_lifehistory.csv). More information can be found [here](http://onlinelibrary.wiley.com/doi/10.1002/ecy.1680/suppinfo). The host taxonomy is downloaded from the NCBI taxonomy database using this [script](../get_taxonomyget_clean_host_taxonomy.md).
