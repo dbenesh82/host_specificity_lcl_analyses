@@ -1,7 +1,7 @@
 Host specificity analyses - calculate and analyze host specificity
 ================
 
-**Background**: This script examines patterns of host specificity in complex life cycles. I use a [database](http://onlinelibrary.wiley.com/doi/10.1002/ecy.1680/suppinfo) of helminth (parasitic worm) life cycles to examine the diversity of hosts exploited by these parasites. Complex life cycle parasites infect dissimilar hosts during their life, e.g. an invertebrate as first host and a vertebrate as second host. Do complex life cycle parasites infect more hosts than simple life cycle parasites? How does specificity vary within cycles (i.e. larval vs adult stage). I use two specificity indices: host range and a specificity index that accounts for the taxonomic similarity of hosts. To calculate this second index, we need taxonomic information for each host. Taxonomic data can be downloaded from the NCBI by running the script [get\_clean\_host\_taxonomy](../get_taxonomy/get_clean_host_taxonomy.Rmd).
+**Background**: This script examines patterns of host specificity in complex life cycles. I use a [database](http://onlinelibrary.wiley.com/doi/10.1002/ecy.1680/suppinfo) of helminth (parasitic worm) life cycles to examine the diversity of hosts exploited by these parasites. Complex life cycle parasites infect dissimilar hosts during their life, e.g. an invertebrate as first host and a vertebrate as second host. Do complex life cycle parasites infect more hosts than simple life cycle parasites? How does specificity vary within cycles (i.e. larval vs adult stage). I use two specificity indices: host range and a specificity index that accounts for the taxonomic similarity of hosts. To calculate this second index, we need taxonomic information for each host. Taxonomic data can be downloaded from the NCBI by running the script [get\_clean\_host\_taxonomy](../get_taxonomy/get_clean_host_taxonomy.md).
 
 Start as usual by loading libraries, setting a plotting theme, and importing data
 
@@ -134,7 +134,7 @@ phy.hs <- select(dataH, Parasite.species, Host.no, Stage, Host.species, # retain
   filter(!is.na(family) | !is.na(order) | !is.na(class) | !is.na(phylum))
 ```
 
-Let's calculate the host specificity index proposed by [Poulin and Mouillot 2003](LINK!!!) that accounts for the taxonomic similarity of hosts. We load a couple functions from an external file for calculating this index.
+Let's calculate the host specificity index proposed by [Poulin and Mouillot 2003](https://doi.org/10.1017/S0031182003002993) that accounts for the taxonomic similarity of hosts. We load a couple functions from an external file for calculating this index.
 
 ``` r
 source("host_specificity_index_calculation_functions.R")
@@ -377,7 +377,7 @@ I also experimented with an *interactive* version of this plot using R shiny. Th
 write.table(dataH.hs, file = "../interactive_shiny_plot/data_for_shiny.csv", row.names = F, sep = ",")
 ```
 
-In my opinion, no patterns really jump out of these slopegraphs. One trend is that worm are rather generalist in the second intermediate host in three-host cycles. Perhaps the most important take away is that host specificty can change a lot over a cycle. The abundance of crossing lines (i.e. specificity can be very high in one stage and low in the next, or vice versa) could suggest there is a tradeoff across stages. To look for such a tradeoff, we need to make the long data wide.
+One trend is that worms are rather generalist in the second intermediate host in three-host cycles, but in my opinion, no patterns really jump out of these slopegraphs. Perhaps the most important take away is that host specificty can change a lot over a cycle. The abundance of crossing lines (i.e. specificity can be very high in one stage and low in the next, or vice versa) could suggest there is a tradeoff across stages. To look for such a tradeoff, we need to 'spread' the data, i.e. make long data wide.
 
 ``` r
 hs_cov <- select(dataH.hs, Parasite.species, Host.no, maxLCL, hs)%>%
@@ -399,7 +399,7 @@ ggplot(filter(hs_cov, maxLCL == 2),
 
 ### Specificity vs growth tradeoff
 
-We can examine another potential tradeoff related to host specificity. Namely, that generalist stages grow less. A common idea about the evolution of specificity is that a 'jack-of-all-trades is a master of none'. Some maybe generalists (jack-of-all-trades) pay for their wide host ranges with less growth. By contrast, specialists (masters) grow extensively. Let's import the parasite body size data from the life cycle database.
+We can examine another potential tradeoff related to host specificity. Namely, that generalist stages grow less. A common idea about the evolution of specificity is that a 'jack-of-all-trades is a master of none'. That is, generalists (jacks) pay for their wide host ranges with less growth, while specialists (masters) grow extensively. Let's import the parasite body size data from the life cycle database.
 
 ``` r
 dataL <- read.csv(file="../data/CLC_database_lifehistory.csv", header = TRUE, sep=",")
@@ -505,7 +505,7 @@ outfig <- ggplot(filter(growth_df, hosts > 1),
         legend.background = element_blank(),
         legend.text = element_text(size = 12),
         legend.key = element_rect(fill = NA)) +
-  labs(x = "Orders of magnitude size increase in host", y = "Host specificity index")
+  labs(x = "Orders of magnitude size increase", y = "Host specificity index")
 outfig
 ```
 
@@ -513,7 +513,7 @@ outfig
 
 ``` r
 # want to export this figure, for use in word doc
-ggsave(filename = "../figs/hostdissimilarity_vs_growth.png", width = 5, height = 4.5, units = "in")
+ggsave(filename = "../figs/hostdissimilarity_vs_growth.png", width = 5.5, height = 5, units = "in")
 ```
 
 It is noisy, but negative. More growth at a given stage is associated with being more host specific at that stage. And this does not seem to differ between adult and larval stages. A simple linear regression is also significant.
@@ -528,19 +528,19 @@ summary(lm(hs ~ rel_diff, growth_df))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -1.4413 -1.0681 -0.1404  0.8216  3.2259 
+    ## -1.4389 -1.0676 -0.1404  0.8228  3.2266 
     ## 
     ## Coefficients:
     ##             Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)  2.36019    0.06594  35.795  < 2e-16 ***
-    ## rel_diff    -0.11122    0.02630  -4.229 2.62e-05 ***
+    ## (Intercept)  2.35826    0.06587  35.801  < 2e-16 ***
+    ## rel_diff    -0.11068    0.02627  -4.213 2.81e-05 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.082 on 804 degrees of freedom
+    ## Residual standard error: 1.081 on 804 degrees of freedom
     ##   (1033 observations deleted due to missingness)
-    ## Multiple R-squared:  0.02176,    Adjusted R-squared:  0.02054 
-    ## F-statistic: 17.89 on 1 and 804 DF,  p-value: 2.616e-05
+    ## Multiple R-squared:  0.0216, Adjusted R-squared:  0.02038 
+    ## F-statistic: 17.75 on 1 and 804 DF,  p-value: 2.809e-05
 
 Each point on the previous plot is not necessarily independent, given that multiple growth measurements can come from a single species (e.g. growth in first host, second host, etc.). Previously, we saw that specificity in first and second hosts is uncorrelated, so it is not likely that this matters. Still, we can take the previous plot and see if the parasite species seems to matter.
 
@@ -575,23 +575,23 @@ summary(out2)
     ## Formula: hs ~ rel_diff + stage2 + (1 | Parasite.species)
     ##    Data: filter(growth_df, !is.na(rel_diff), hosts > 1)
     ## 
-    ## REML criterion at convergence: 1669.8
+    ## REML criterion at convergence: 1668.3
     ## 
     ## Scaled residuals: 
     ##      Min       1Q   Median       3Q      Max 
-    ## -1.85936 -0.68372  0.02147  0.66221  2.82394 
+    ## -1.85860 -0.68527  0.02209  0.66417  2.82639 
     ## 
     ## Random effects:
-    ##  Groups           Name        Variance  Std.Dev. 
-    ##  Parasite.species (Intercept) 9.438e-15 9.715e-08
-    ##  Residual                     9.712e-01 9.855e-01
+    ##  Groups           Name        Variance Std.Dev.
+    ##  Parasite.species (Intercept) 0.0000   0.0000  
+    ##  Residual                     0.9688   0.9843  
     ## Number of obs: 591, groups:  Parasite.species, 439
     ## 
     ## Fixed effects:
     ##             Estimate Std. Error t value
-    ## (Intercept)  2.67681    0.10807  24.768
-    ## rel_diff    -0.09399    0.03036  -3.095
-    ## stage2larva  0.08708    0.09268   0.940
+    ## (Intercept)  2.67000    0.10794  24.736
+    ## rel_diff    -0.09264    0.03033  -3.055
+    ## stage2larva  0.09187    0.09257   0.992
     ## 
     ## Correlation of Fixed Effects:
     ##             (Intr) rl_dff
@@ -607,9 +607,9 @@ anova(out1, out2)
     ## out1: hs ~ stage2 + (1 | Parasite.species)
     ## out2: hs ~ rel_diff + stage2 + (1 | Parasite.species)
     ##      Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)   
-    ## out1  4 1674.5 1692.0 -833.23   1666.5                            
-    ## out2  5 1666.9 1688.8 -828.46   1656.9 9.5533      1   0.001996 **
+    ## out1  4 1672.8 1690.3 -832.38   1664.8                            
+    ## out2  5 1665.5 1687.4 -827.73   1655.5 9.3066      1   0.002283 **
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-The absence of a 'species effect' does not necessarily mean it is irrelevant. It may just be that at the species level there is too much variation, perhaps measurement error, to see a trend. There might be broader phylogenetic trends, where one parasite clade is consistently generalist at one stage and specific at another. In other words, we need a parasite phylogeny to better evaluate these patterns.
+The absence of a 'species effect' does not necessarily mean it is irrelevant. It may just be that at the species level there is too much variation to see a trend, perhaps due to measurement error. There might be broader phylogenetic trends, where one parasite clade is consistently generalist at one stage and specific at another. In other words, we need a parasite phylogeny to more fully evaluate these patterns.
